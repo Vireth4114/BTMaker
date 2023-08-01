@@ -15,3 +15,7 @@ There's too much left to be done:
 However it will never have:
 - Code edition, I want this to be as accurate as possible to the original game, so I won't change the code
 - Adding sprites or levels instead of editing them, it really saddens me that the sprite count was hardcoded into the game
+
+---
+
+You probably need at least Java 11 to run this
