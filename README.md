@@ -1,5 +1,4 @@
 # BTMaker: A Bounce Tales Level Editor
----
 
 This is my attempt to make a complete level editor for the 2008 Rovio Entertainment's game Bounce Tales on Java Phone
 
@@ -16,9 +15,3 @@ There's too much left to be done:
 However it will never have:
 - Code edition, I want this to be as accurate as possible to the original game, so I won't change the code
 - Adding sprites or levels instead of editing them, it really saddens me that the sprite count was hardcoded into the game
-
----
-## Build
----
-
-idk how to build it myself
