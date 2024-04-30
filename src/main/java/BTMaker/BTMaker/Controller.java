@@ -23,40 +23,48 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import model.*;
+import model.GameObject;
+import model.GeometryObject;
+import model.Level;
+import model.MovingCircle;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 
 public class Controller implements Initializable {
-	@FXML Pane pane;
-	@FXML VBox vBox;
-	@FXML VBox openVBox;
-	private File gameFile = null;
-	private Level level = null;
-	private ArrayList<Level> levels = new ArrayList<Level>(Arrays.asList(new Level[15]));
-	private double size;
-	private double leftOffset = 0;
-	private double topOffset = 0;
-	private boolean ctrlHeld = false;
-	private HashMap<Shape, Short> shapeIDs = new HashMap<Shape, Short>();
-	private SimpleIntegerProperty selectedID = new SimpleIntegerProperty();
-	private MovingCircle target = null;
-	private double mouseX = 0;
-	private double mouseY = 0;
-	private short objectX = 0;
-	private short objectY = 0;
+	@FXML public Pane pane;
+	@FXML public VBox vBox;
+	@FXML public VBox openVBox;
+	@FXML public HBox hBox;
+	@FXML public BorderPane borderPane;
+	public File gameFile = null;
+	public Level level = null;
+	public ArrayList<Level> levels = new ArrayList<Level>(Arrays.asList(new Level[15]));
+	public double size;
+	public double leftOffset = 0;
+	public double topOffset = 0;
+	public boolean ctrlHeld = false;
+	public HashMap<Shape, Short> shapeIDs = new HashMap<Shape, Short>();
+	public SimpleIntegerProperty selectedID = new SimpleIntegerProperty();
+	public MovingCircle target = null;
+	public double mouseX = 0;
+	public double mouseY = 0;
+	public short objectX = 0;
+	public short objectY = 0;
+	public double xOffset = 0;
+	public double yOffset = 0;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -70,8 +78,10 @@ public class Controller implements Initializable {
 		});
 		vBox.setAlignment(Pos.CENTER);
 		vBox.setSpacing(10);
+		hBox.setAlignment(Pos.CENTER);
+		hBox.setSpacing(10);
 		pane.setStyle("-fx-background-color: black;");
-		Text text = new Text("Open the game or it won't work");
+		Text text = new Text("Please open the game");
 		text.setFill(Color.WHITE);
 		text.setFont(new Font(50));
 		openVBox.getChildren().add(text);
@@ -113,45 +123,40 @@ public class Controller implements Initializable {
 			draw();
 		});
 		pane.setOnMousePressed(e -> {
-			if (e.getTarget() instanceof Shape) {
+			if (e.getTarget() instanceof Shape && !(e.getTarget() instanceof Line)) {
 				mouseX = e.getX();
 				mouseY = e.getY();
 				if (e.getTarget() instanceof MovingCircle) {
 					target = (MovingCircle) e.getTarget();
 				} else {
 					selectedID.set(shapeIDs.get(e.getTarget()));
-					objectX = level.objects.get(selectedID.get()).xPos;
-					objectY = level.objects.get(selectedID.get()).yPos; 
+					GameObject obj = level.objects.get(selectedID.get());
+					objectX = obj.xPos;
+					objectY = obj.yPos;
+					obj.onClick(this);
 				}
 			} else {
 				selectedID.set(-1);
 			}
+			draw();
 		});
 		pane.setOnMouseDragged(e -> {
 			if (target != null) {
 				GeometryObject gObj = (GeometryObject) level.objects.get(selectedID.get());
-				double xOffset = (pane.getWidth()/size - (level.xMax-level.xMin))/2 + leftOffset;
-				double yOffset = (pane.getHeight()/size - (level.yMax-level.yMin))/2 + topOffset;
-				gObj.trueX[target.id] = (int) Math.floor(e.getX()/size + level.xMin - xOffset);
-				gObj.trueY[target.id] = (int) Math.floor(level.yMax - e.getY()/size + yOffset);
+				gObj.trueX[target.id] = (int) Math.round(e.getX()/size + level.xMin - xOffset);
+				gObj.trueY[target.id] = (int) Math.round(level.yMax - e.getY()/size + yOffset);
 				gObj.xList[target.id] = gObj.trueX[target.id] - gObj.xAbs;
 				gObj.yList[target.id] = gObj.trueY[target.id] - gObj.yAbs;
 			} else if (selectedID.get() != -1) {
 				GameObject obj = level.objects.get(selectedID.get());
-				obj.xPos = (short) (objectX + Math.floor((e.getX()-mouseX)/size));
-				obj.yPos = (short) (objectY - Math.floor((e.getY()-mouseY)/size));
+				obj.xPos = (short) (objectX + Math.round((e.getX()-mouseX)/size));
+				obj.yPos = (short) (objectY - Math.round((e.getY()-mouseY)/size));
+				System.out.println(obj.xPos+" "+obj.yPos);
 				for (GameObject obj1: level.objects) {
 					obj1.absSet = false;
 				}
 				for (GameObject obj1: level.objects) {
 					obj1.doAbs(level.objects);
-					if (obj1 instanceof GeometryObject) {
-						GeometryObject gObj = (GeometryObject) obj1	;
-						for (int i = 0; i < gObj.angles; i++) {
-							gObj.trueX[i] = gObj.xList[i] + gObj.xAbs;
-							gObj.trueY[i] = gObj.yList[i] + gObj.yAbs;
-						}
-					}
 				}
 			}
 			draw();
@@ -159,14 +164,15 @@ public class Controller implements Initializable {
 		pane.setOnMouseReleased(e -> {
 			target = null;
 		});
-		selectedID.addListener(e -> addTargets());
 	}
 	
 	public void draw() {
+		System.out.println(size);
 		shapeIDs.clear();
-		double xOffset = (pane.getWidth()/size - (level.xMax-level.xMin))/2 + leftOffset;
-		double yOffset = (pane.getHeight()/size - (level.yMax-level.yMin))/2 + topOffset;
+		xOffset = (pane.getWidth()/size - (level.xMax-level.xMin))/2 + leftOffset;
+		yOffset = (pane.getHeight()/size - (level.yMax-level.yMin))/2 + topOffset;
 		pane.getChildren().clear();
+		addGrid(Math.pow(10, 1-Math.floor(Math.log(size)/Math.log(20))));
 		ArrayList<GameObject> zObjects = new ArrayList<GameObject>(level.objects);
 		zObjects.sort(new Comparator<GameObject>() {
 			@Override
@@ -175,36 +181,29 @@ public class Controller implements Initializable {
 			}
 		});
 		for (GameObject obj: zObjects) {
-			if (obj.type == 8) {
-				double x = (obj.xAbs - level.xMin + xOffset)*size;
-				double y = (level.yMax - obj.yAbs + yOffset)*size;
-				Circle bounce = new Circle(x, y, 20*size);
-				bounce.setFill(Color.RED);
-				shapeIDs.put(bounce, obj.id);
-				pane.getChildren().add(bounce);
-			}
-			if (obj instanceof GeometryObject) {
-				GeometryObject gObj = (GeometryObject) obj;
-				for (int i = 0; i < gObj.polygons; i += 3) {
-					double listCorners[] = new double[6];
-					for (int j = 0; j < 3; j++) {
-						int x = gObj.trueX[gObj.indexBuffer[i + j]];
-						int y = gObj.trueY[gObj.indexBuffer[i + j]];
-						listCorners[j*2] = (x - level.xMin + xOffset)*size;
-						listCorners[j*2 + 1] = (level.yMax - y + yOffset)*size;
-					}
-					Polygon p = new Polygon(listCorners);
-					p.setFill(gObj.color);
-					p.setStroke(gObj.color);
-					pane.getChildren().add(p);
-					shapeIDs.put(p, obj.id);
-				}
+			for (Shape shape: obj.getShapes(this)) {
+				shapeIDs.put(shape, obj.id);
+				pane.getChildren().add(shape);
 			}
 		}
 		addTargets();
-		Rectangle r = new Rectangle(pane.getWidth(), 0, 200, pane.getHeight());
+		Rectangle r = new Rectangle(pane.getWidth(), 0, 200, borderPane.getHeight());
 		r.setFill(Color.WHITE);
 		pane.getChildren().add(r);
+		Rectangle r2 = new Rectangle(0, pane.getHeight(), pane.getWidth(), 100);
+		r2.setFill(Color.WHITE);
+		pane.getChildren().add(r2);
+	}
+	
+	public void addGrid(double gridSize) {				   
+		for (double x = ((xOffset - level.xMin) % gridSize)*size; x < pane.getWidth(); x += gridSize*size) {
+			Line l = new Line(x, 0, x, pane.getHeight());
+			pane.getChildren().add(l);
+		}
+		for (double y = ((yOffset + level.yMax) % gridSize)*size; y < pane.getHeight(); y += gridSize*size) {
+			Line l = new Line(0, y, pane.getWidth(), y);
+			pane.getChildren().add(l);
+		}
 	}
 	
 	public void addTargets() {
@@ -218,8 +217,6 @@ public class Controller implements Initializable {
 			if (level.objects.get((selectedID.get())) instanceof GeometryObject) {
 				GeometryObject gObj = (GeometryObject) level.objects.get(selectedID.get());
 				for (int i = 0; i < gObj.angles; i++) {
-					double xOffset = (pane.getWidth()/size - (level.xMax-level.xMin))/2 + leftOffset;
-					double yOffset = (pane.getHeight()/size - (level.yMax-level.yMin))/2 + topOffset;
 					double x = (gObj.trueX[i] - level.xMin + xOffset)*size;
 					double y = (level.yMax - gObj.trueY[i] + yOffset)*size;
 					MovingCircle target = new MovingCircle(x, y, i);
@@ -232,57 +229,30 @@ public class Controller implements Initializable {
 	public void onKeyPress(KeyEvent evt) {
 		if (level != null) {
 			switch (evt.getCode()) {
-				case ADD:
-					size *= 1.1;
-					draw();
-					break;
-				case SUBTRACT:
-					size *= 0.9;
-					draw();
-					break;
-				case LEFT:
-					leftOffset += 100/size;
-					draw();
-					break;
-				case RIGHT:
-					leftOffset -= 100/size;
-					draw();
-					break;
-				case UP:
-					topOffset += 100/size;
-					draw();
-					break;
-				case DOWN:
-					topOffset -= 100/size;
-					draw();
-					break;
-				case CONTROL:
-					ctrlHeld = true;
-					break;
-				case NUMPAD0:
-					topOffset = 0;
-					leftOffset = 0;
-					draw();
-					break;
-				default:
-					break;
+				case ADD:      size = Math.min(100 , size*1.1); break;
+				case SUBTRACT: size = Math.max(0.05, size*0.9); break;
+				case LEFT:     leftOffset += 100/size; break;
+				case RIGHT:    leftOffset -= 100/size; break;
+				case UP:       topOffset += 100/size; break;
+				case DOWN: 	   topOffset -= 100/size; break;
+				case CONTROL:  ctrlHeld = true; break;
+				case NUMPAD0:  topOffset = 0; leftOffset = 0; break;
+				default: return;
 			}
+			draw();
 		}
 	}
 	
 	public void onKeyReleased(KeyEvent evt) {
 		switch(evt.getCode()) {
-			case CONTROL:
-				ctrlHeld = false;
-				break;
-			default:
-				break;
+			case CONTROL: ctrlHeld = false; break;
+			default: break;
 		}
 	}
 	
 	public void onScroll(ScrollEvent evt) {
 		if (ctrlHeld) {
-			size *= 1 + Math.signum(evt.getDeltaY())/25;
+			size = Math.min(100, Math.max(0.05, size*(1 + Math.signum(evt.getDeltaY())/25)));
 		} else {
 			leftOffset += evt.getDeltaX()*2/size;
 			topOffset += evt.getDeltaY()*2/size;
@@ -293,7 +263,8 @@ public class Controller implements Initializable {
 	public void onOpen() throws IOException, ZipException {
 		FileChooser fc = new FileChooser();
 		fc.getExtensionFilters().addAll(new ExtensionFilter("Java Game", "*.jar", "*.jad"), new ExtensionFilter("All Files", "*.*"));
-		gameFile = fc.showOpenDialog(null);
+//		gameFile = fc.showOpenDialog(null);
+		gameFile = new File("C:\\Users\\rapha\\Documents\\KEmulator\\bouncetale_tzasvtte.jar");
 		ZipFile zipfile = new ZipFile(gameFile);
 		zipfile.extractAll(gameFile.getParent() + "\\BTMaker_dir");
 		for (char l = 'f'; l <= 't'; l++) {

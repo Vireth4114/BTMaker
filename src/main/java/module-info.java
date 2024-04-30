@@ -6,4 +6,5 @@ module BTMaker.BTMaker {
 
     opens BTMaker.BTMaker;
     exports BTMaker.BTMaker;
+    exports model;
 }

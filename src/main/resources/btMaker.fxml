@@ -8,25 +8,35 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <center>
-      <Pane fx:id="pane" BorderPane.alignment="CENTER">
-      	<VBox fx:id="openVBox" />
-      </Pane>
-   </center>
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open" />
-              <MenuItem mnemonicParsing="false" onAction="#onSave" text="Save" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <right>
-      <VBox fx:id="vBox" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </right>
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+	prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<center>
+		<Pane fx:id="pane" BorderPane.alignment="CENTER">
+			<VBox fx:id="openVBox" />
+		</Pane>
+	</center>
+	<top>
+		<MenuBar BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onOpen"
+							text="Open" />
+						<MenuItem mnemonicParsing="false" onAction="#onSave"
+							text="Save" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+	<right>
+		<VBox fx:id="vBox" prefWidth="200.0"
+			BorderPane.alignment="CENTER" />
+	</right>
+	<bottom>
+		<HBox fx:id="hBox" prefHeight="100.0"
+			BorderPane.alignment="CENTER" />
+	</bottom>
 </BorderPane>

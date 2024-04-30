@@ -15,8 +15,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-    	stage.getIcons().add(new Image("/resources/icon.png"));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/btMaker.fxml"));
+    	stage.getIcons().add(new Image("/icon.png"));
+    	stage.setTitle("BTMaker 0.0.1");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/btMaker.fxml"));
         Controller controller = new Controller();
         fxmlLoader.setController(controller);
         scene = new Scene(fxmlLoader.load(), 1200, 675);
