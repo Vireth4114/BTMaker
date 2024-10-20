@@ -1,42 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity"
-	minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-	prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1"
-	xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
 	<center>
-		<Pane fx:id="pane" BorderPane.alignment="CENTER">
-			<VBox fx:id="openVBox" />
-		</Pane>
+		<SplitPane fx:id="outerSplit" dividerPositions="0.1, 0.9">
+			<items>
+				<VBox fx:id="vBox"/>
+				<SplitPane fx:id="innerSplit" dividerPositions="0.8" orientation="VERTICAL">
+					<items>
+						<Pane fx:id="pane">
+							<VBox fx:id="openVBox" />
+						</Pane>
+
+						<HBox fx:id="hBox"/>
+					</items>
+				</SplitPane>
+				<VBox fx:id="dragBox"/>
+			</items>
+		</SplitPane>
 	</center>
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
 			<menus>
 				<Menu mnemonicParsing="false" text="File">
 					<items>
-						<MenuItem mnemonicParsing="false" onAction="#onOpen"
-							text="Open" />
-						<MenuItem mnemonicParsing="false" onAction="#onSave"
-							text="Save" />
+						<MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open" />
+						<!-- <MenuItem mnemonicParsing="false" onAction="#onDebugOpen" text="Open" /> -->
+						<MenuItem fx:id="save" mnemonicParsing="false" onAction="#onSave" text="Save" disable="true"/>
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Edit">
+					<items>
+						<CheckMenuItem fx:id="gridCheck" disable="true" mnemonicParsing="false" text="Grid" />
+						<CheckMenuItem fx:id="invisibleCheck" disable="true" mnemonicParsing="false" text="Show invisible objects" />
 					</items>
 				</Menu>
 			</menus>
 		</MenuBar>
 	</top>
-	<right>
-		<VBox fx:id="vBox" prefWidth="200.0"
-			BorderPane.alignment="CENTER" />
-	</right>
-	<bottom>
-		<HBox fx:id="hBox" prefHeight="100.0"
-			BorderPane.alignment="CENTER" />
-	</bottom>
 </BorderPane>

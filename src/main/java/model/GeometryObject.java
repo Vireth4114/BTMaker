@@ -8,10 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import BTMaker.BTMaker.Controller;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 
 public class GeometryObject extends GameObject {
 
@@ -99,39 +100,44 @@ public class GeometryObject extends GameObject {
 	
 	@Override
 	public String toString() {
-		return "GeometryObject [angles=" + angles + ", polygons=" + polygons + ", color=" + color + ", xList="
+		return super.toString() + "[angles=" + angles + ", polygons=" + polygons + ", color=" + color + ", xList="
 				+ Arrays.toString(xList) + ", yList=" + Arrays.toString(yList) + ", indexBuffer="
-				+ Arrays.toString(indexBuffer) + ", toString()=" + super.toString() + "]";
+				+ Arrays.toString(indexBuffer) + "]";
 	}
 	
 	@Override
-	public List<Shape> getShapes(Controller controller) {
-		ArrayList<Shape> shapes = new ArrayList<Shape>();
+	public List<Node> getShapes(Controller controller) {
+		ArrayList<Node> shapes = new ArrayList<Node>();
 		for (int i = 0; i < polygons; i += 3) {
 			double listCorners[] = new double[6];
 			for (int j = 0; j < 3; j++) {
 				int x = trueX[indexBuffer[i + j]];
 				int y = trueY[indexBuffer[i + j]];
-				listCorners[j*2] = (x - controller.level.xMin + controller.xOffset)*controller.size;
-				listCorners[j*2 + 1] = (controller.level.yMax - y + controller.yOffset)*controller.size;
+				listCorners[j*2] = controller.transX(x);
+				listCorners[j*2 + 1] = controller.transY(y);
 			}
 			Polygon p = new Polygon(listCorners);
-			p.setFill(color);
-			p.setStroke(color);
+			Color c = color;
+			p.setFill(c);
+			p.setStroke(c);
 			shapes.add(p);
 		}
-		return shapes;
+		Group g = new Group(shapes);
+		g.setTranslateX((1 - xScale)* (controller.transX(xAbs) - g.getLayoutBounds().getCenterX()));
+		g.setTranslateY((1 - yScale)* (controller.transY(yAbs) - g.getLayoutBounds().getCenterY()));
+		return Arrays.asList(g);
 	}
 	
 	@Override
 	public void onClick(Controller controller) {
 		controller.addTargets();
-		controller.hBox.getChildren().clear();
 		ColorPicker button = new ColorPicker(color);
 		button.setPrefHeight(30);
 		button.setPrefWidth(150);
 		button.setOnAction(evt -> {color = button.getValue(); controller.draw();});
+		button.getStyleClass().add("button");
 		controller.hBox.getChildren().add(button);
+		System.out.println(xAbs+" "+yAbs+" "+(xAbs - trueX[0]));
 	}
 	
 	@Override
@@ -147,6 +153,7 @@ public class GeometryObject extends GameObject {
 	}
 	
 	public static int[] toIndex(byte[] byteList, byte n, short base) {
+		if (byteList.length == 0) return new int[] {};
 		String str = "";
 		for (int i = byteList.length-1; i >= 0; i--) {
 			String binText = String.format("%8s", Integer.toBinaryString(byteList[i])).replace(' ', '0');
@@ -162,6 +169,7 @@ public class GeometryObject extends GameObject {
 	}
 	
 	public static byte[] toHex(int[] intList, byte n, short base) {
+		if (intList.length == 0) return new byte[] {};
 		String str = "";
 		for (int i = intList.length-1; i >= 0; i--) {
 			String binText = String.format("%"+n+"s", Integer.toBinaryString(intList[i] - base)).replace(' ', '0');

@@ -1,0 +1,51 @@
+.text-field, .button, .choice-box, .check-box .box, .combo-box {
+	-fx-background-color: transparent;
+	-fx-text-fill: white;
+	-fx-border-color: white;
+}
+
+.list-cell, .list-view {
+	-fx-background-color: #303030;
+}
+
+.text-field {
+	-fx-pref-width: 50px;
+	-fx-alignment: center;
+}
+
+.button {
+	-fx-border-radius: 1000;
+}
+
+.label {
+	-fx-text-fill: white;
+}
+
+.menu-bar, .menu-item:hover, .button:hover {
+	-fx-background-color: #202020;
+}
+
+.menu-item:hover, .button:hover {
+	-fx-background-radius: 1000;	
+}
+
+#vBox, #dragBox, #hBox, .context-menu, .viewport, .scroll-bar:vertical {
+	-fx-background-color: #303030;	
+}
+
+.scroll-pane {
+	-fx-hbar-policy: never;
+}
+
+#hBox {
+	-fx-padding: 10px;
+}
+
+.split-pane-divider {
+	-fx-pref-width: 1px;
+}
+
+
+.check-box:selected .box .mark {
+	-fx-background-color: white;
+}

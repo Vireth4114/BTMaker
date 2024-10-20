@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BTMaker.BTMaker.Controller;
-import javafx.scene.shape.Shape;
+import javafx.scene.Node;
 
 public class GameObject {
 	public short length;
 	public short id;
+	public short initialID;
 	public byte type;
 	public short parentID;
 	public short previousID;
@@ -31,7 +32,8 @@ public class GameObject {
 	
 	@Override
 	public String toString() {
-		return "GameObject [id=" + id + ", type=" + type + ", parentID=" + parentID + 
+		return this.getClass().getSimpleName()+" [id=" + id + ", type=" + type + ", parentID=" + parentID +
+				", previousID=" + previousID + ", length=" + length + ", transformFlags=" + transformFlags +
 				", xPos=" + xPos + ", yPos=" + yPos + ", xAbs=" + xAbs +
 				", yAbs=" + yAbs + ", flags=" + flags + ", zcoord=" +
 				zcoord + ", noDraw=" + noDraw + "]";
@@ -39,6 +41,11 @@ public class GameObject {
 	
 	public GameObject(short id, byte type) {
 		this.id = id;
+		if (Controller.instance.level != null) {			
+			this.initialID = (short) (Controller.instance.level.deletedObjects.size() + id);
+		} else {
+			this.initialID = id;
+		}
 		this.type = type;
 	}
 	
@@ -92,10 +99,10 @@ public class GameObject {
 		if (transformFlags == 7) {
 			length -= 12;
 		}
+		int offset = 0;
 		dos.writeShort(length);
 		dos.writeShort(parentID);
 		dos.writeShort(previousID);
-		int offset = 0;
 		if (transformFlags == 7) {
 			dos.writeByte(5);
 			offset = 12;
@@ -140,8 +147,8 @@ public class GameObject {
 		return new short[]{xAbs, yAbs};
 	}
 
-	public List<Shape> getShapes(Controller controller) {
-		return new ArrayList<Shape>();
+	public List<Node> getShapes(Controller controller) {
+		return new ArrayList<Node>();
 	}
 	
 	public void onClick(Controller controller) {}
