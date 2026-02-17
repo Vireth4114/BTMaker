@@ -39,6 +39,7 @@ public class CannonObject extends GameObject {
 
 	@Override
 	public void onClick(Controller controller) {
+		super.onClick(controller);
 		TextField numberField = new TextField();
 		numberField.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
 		numberField.setText(String.valueOf(power));
@@ -53,8 +54,8 @@ public class CannonObject extends GameObject {
 	public List<Node> getShapes(Controller controller) {
 		ArrayList<Node> shapes = new ArrayList<Node>();
 		Node sprite = controller.getImageById((short) 48);
-		sprite.setLayoutX(controller.transX(xAbs));
-		sprite.setLayoutY(controller.transY(yAbs));
+		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
+		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		for (GeometryObject gObj: controller.cannonShapes) {
 			gObj.xAbs = xAbs;
 			gObj.yAbs = yAbs;
@@ -63,8 +64,19 @@ public class CannonObject extends GameObject {
 		}
 		shapes.add(sprite);
 		Group g = new Group(shapes);
-		g.setTranslateX((1 - xScale)* (controller.transX(xAbs) - g.getLayoutBounds().getCenterX()));
-		g.setTranslateY((1 - yScale)* (controller.transY(yAbs) - g.getLayoutBounds().getCenterY()));
+		g.setTranslateX((1 - xScale)* (controller.levelXtoViewX(xAbs) - g.getLayoutBounds().getCenterX()));
+		g.setTranslateY((1 - yScale)* (controller.levelYtoViewY(yAbs) - g.getLayoutBounds().getCenterY()));
 		return Arrays.asList(g);
+	}
+
+	public void createParams() {
+		playerId = Controller.level.bounceObject;
+		power = 80;
+		length = 16;
+	}
+
+	@Override
+	public String getExport() {
+		return super.getExport() + "\n\tpower: "+power;
 	}
 }

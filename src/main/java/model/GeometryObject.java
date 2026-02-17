@@ -8,11 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import BTMaker.BTMaker.Controller;
+import BTMaker.BTMaker.PolygonTriangulation;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
 
 public class GeometryObject extends GameObject {
 
@@ -38,13 +41,19 @@ public class GeometryObject extends GameObject {
 		byte bitSize = dis.readByte();
 		int fullSize = (int)Math.ceil(bitSize*angles/8.0);
 		short base = dis.readShort();
-		xList = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		int[] bigXList = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		xList = new int[angles];
+		System.arraycopy(bigXList, 0, xList, 0, angles);
 		base = dis.readShort();
-		yList = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		int[] bigYList = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		yList = new int[angles];
+		System.arraycopy(bigYList, 0, yList, 0, angles);
 		bitSize = dis.readByte();
 		fullSize = (int)Math.ceil(bitSize*polygons/8.0);
 		base = 0;
-		indexBuffer = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		int[] bigIndexBuffer = toIndex(dis.readNBytes(fullSize), bitSize, base);
+		indexBuffer = new int[polygons];
+		System.arraycopy(bigIndexBuffer, 0, indexBuffer, 0, polygons);
 		nbRead = (short) (length - 2);
 		return nbRead;
 	}
@@ -63,8 +72,8 @@ public class GeometryObject extends GameObject {
 			yMin = Math.min(yMin, y);
 			yMax = Math.max(yMax, y);
 		}
-		short xBase = (short) Math.ceil((xMax + xMin)/2);
-		short yBase = (short) Math.ceil((yMax + yMin)/2);
+		short xBase = (short) Math.ceil((double) (xMax + xMin) /2);
+		short yBase = (short) Math.ceil((double) (yMax + yMin) /2);
 		byte bitSize = (byte) Math.max(Math.ceil(Math.log(xMax - xBase + 1)/Math.log(2)) + 1,
 					                   Math.ceil(Math.log(yMax - yBase + 1)/Math.log(2)) + 1);
 		int idxMax = -1;
@@ -107,37 +116,89 @@ public class GeometryObject extends GameObject {
 	
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		ArrayList<Node> shapes = new ArrayList<Node>();
+		ArrayList<Node> shapes = new ArrayList<>();
 		for (int i = 0; i < polygons; i += 3) {
 			double listCorners[] = new double[6];
 			for (int j = 0; j < 3; j++) {
 				int x = trueX[indexBuffer[i + j]];
 				int y = trueY[indexBuffer[i + j]];
-				listCorners[j*2] = controller.transX(x);
-				listCorners[j*2 + 1] = controller.transY(y);
+				listCorners[j*2] = controller.levelXtoViewX(x);
+				listCorners[j*2 + 1] = controller.levelYtoViewY(y);
 			}
 			Polygon p = new Polygon(listCorners);
 			Color c = color;
 			p.setFill(c);
-			p.setStroke(c);
+			p.setStroke(controller.showTriangulation ? Color.WHITE : c);
 			shapes.add(p);
 		}
 		Group g = new Group(shapes);
-		g.setTranslateX((1 - xScale)* (controller.transX(xAbs) - g.getLayoutBounds().getCenterX()));
-		g.setTranslateY((1 - yScale)* (controller.transY(yAbs) - g.getLayoutBounds().getCenterY()));
+		g.setTranslateX((1 - xScale)*(controller.levelXtoViewX(xAbs) - g.getLayoutBounds().getCenterX()));
+		g.setTranslateY((1 - yScale)*(controller.levelYtoViewY(yAbs) - g.getLayoutBounds().getCenterY()));
+		return List.of(g);
+	}
+
+	@Override
+	public List<Node> getOverlay(Controller controller) {
+		ArrayList<Node> shapes = new ArrayList<>(super.getOverlay(controller));
+		for (int i = 0; i < angles; i++) {
+			double startX = controller.levelXtoViewX(trueX[i]);
+			double startY = controller.levelYtoViewY(trueY[i]);
+			double endX = controller.levelXtoViewX(trueX[(i + 1) % angles]);
+			double endY = controller.levelYtoViewY(trueY[(i + 1) % angles]);
+			Line l = new Line(startX, startY, endX, endY);
+			l.setStrokeWidth(5);
+			l.setStroke(Color.WHITE);
+			shapes.add(l);
+			double midX = (startX + endX) / 2.0;
+			double midY = (startY + endY) / 2.0;
+			double deltaX = startX - endX;
+			double deltaY = startY - endY;
+			double factor = 10 / Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+			double x2 = midX - deltaY * factor;
+			double y2 = midY + deltaX * factor;
+			Line l2 = new Line(midX, midY, x2, y2);
+			Polygon arrowHead = new Polygon(
+				1.5, 0.0,
+				-2.5, -2.0,
+				-2.5,  2.0
+			);
+
+			arrowHead.setLayoutX(x2);
+			arrowHead.setLayoutY(y2);
+
+			double angle = Math.toDegrees(Math.atan2(y2 - midY, x2 - midX));
+			arrowHead.setRotate(angle);
+
+			for (Shape arrow : Arrays.asList(l2, arrowHead)) {
+				arrow.setStrokeWidth(2);
+				arrow.setStroke(Color.BLACK);
+				arrow.setFill(Color.BLACK);
+				shapes.add(arrow);
+			}
+			if (i != 0) {
+				MovingCircle target = new MovingCircle(startX, startY, i, this);
+				shapes.add(target);
+			}
+		}
+		double startX = controller.levelXtoViewX(trueX[0]);
+		double startY = controller.levelYtoViewY(trueY[0]);
+		MovingCircle target = new MovingCircle(startX, startY, 0, this);
+		shapes.add(target);
+		Group g = new Group(shapes);
+		g.setTranslateX((1 - xScale)*(controller.levelXtoViewX(xAbs) - g.getLayoutBounds().getCenterX()));
+		g.setTranslateY((1 - yScale)*(controller.levelYtoViewY(yAbs) - g.getLayoutBounds().getCenterY()));
 		return Arrays.asList(g);
 	}
 	
 	@Override
 	public void onClick(Controller controller) {
-		controller.addTargets();
+		super.onClick(controller);
 		ColorPicker button = new ColorPicker(color);
 		button.setPrefHeight(30);
 		button.setPrefWidth(150);
 		button.setOnAction(evt -> {color = button.getValue(); controller.draw();});
 		button.getStyleClass().add("button");
 		controller.hBox.getChildren().add(button);
-		System.out.println(xAbs+" "+yAbs+" "+(xAbs - trueX[0]));
 	}
 	
 	@Override
@@ -182,5 +243,75 @@ public class GeometryObject extends GameObject {
 			result[len-i-1] = (byte) (Integer.parseInt(splitted[i], 2) - 2*(Integer.parseInt(splitted[i], 2) & 128));
 		}
 		return result;
+	}
+
+	@Override
+	public String getExport() {
+		StringBuilder str = new StringBuilder(super.getExport());
+		str.append("\n\tcorners: ");
+		for (int i = 0; i < trueX.length; i++) {
+			str.append("\n\t\t");
+			str.append("(");
+			str.append(trueX[i]);
+			str.append(", ");
+			str.append(trueY[i]);
+			str.append(")");
+		}
+		str.append("\n\tcolor: ").append(color);
+		return str.toString();
+	}
+
+	public void createParams() {
+		nbRead = 0;
+		angles = 4;
+		polygons = 6;
+		color = Color.BLACK;
+		xList = new int[] {-50, 50, 50, -50};
+		yList = new int[] {50, 50, -50, -50};
+		indexBuffer = new int[] {1, 0, 2, 3, 2, 0};
+	}
+
+	public void addVertex(int prevVertex, int x, int y) {
+		int[] newXList = new int[angles + 1];
+		int[] newYList = new int[angles + 1];
+		System.arraycopy(xList, 0, newXList, 0, prevVertex + 1);
+		System.arraycopy(yList, 0, newYList, 0, prevVertex + 1);
+		newXList[prevVertex + 1] = x;
+		newYList[prevVertex + 1] = y;
+		System.arraycopy(xList, prevVertex + 1, newXList, prevVertex + 2, angles - prevVertex - 1);
+		System.arraycopy(yList, prevVertex + 1, newYList, prevVertex + 2, angles - prevVertex - 1);
+		xList = newXList;
+		yList = newYList;
+		angles++;
+
+		int[] newIndexBuffer = new int[indexBuffer.length + 3];
+		System.arraycopy(indexBuffer, 0, newIndexBuffer, 0, indexBuffer.length);
+		newIndexBuffer[newIndexBuffer.length - 3] = prevVertex;
+		newIndexBuffer[newIndexBuffer.length - 2] = (prevVertex + 1) % angles;
+		newIndexBuffer[newIndexBuffer.length - 1] = (prevVertex + 2) % angles;
+		indexBuffer = newIndexBuffer;
+		polygons += 3;
+		this.doAbs(Controller.level.objects);
+		triangulate();
+	}
+
+	public void removeVertex(int vertex) {
+		if (angles <= 3) return;
+		int[] newXList = new int[angles - 1];
+		int[] newYList = new int[angles - 1];
+		System.arraycopy(xList, 0, newXList, 0, vertex);
+		System.arraycopy(yList, 0, newYList, 0, vertex);
+		System.arraycopy(xList, vertex + 1, newXList, vertex, angles - vertex - 1);
+		System.arraycopy(yList, vertex + 1, newYList, vertex, angles - vertex - 1);
+		xList = newXList;
+		yList = newYList;
+		angles--;
+		triangulate();
+		this.doAbs(Controller.level.objects);
+	}
+
+	public void triangulate() {
+		indexBuffer = PolygonTriangulation.triangulate(xList, yList);
+		polygons = (short) indexBuffer.length;
 	}
 }

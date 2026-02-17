@@ -13,38 +13,29 @@
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
 	<center>
 		<SplitPane fx:id="outerSplit" dividerPositions="0.1, 0.9">
-			<items>
-				<VBox fx:id="vBox"/>
-				<SplitPane fx:id="innerSplit" dividerPositions="0.8" orientation="VERTICAL">
-					<items>
-						<Pane fx:id="pane">
-							<VBox fx:id="openVBox" />
-						</Pane>
-
-						<HBox fx:id="hBox"/>
-					</items>
-				</SplitPane>
-				<VBox fx:id="dragBox"/>
-			</items>
+			<VBox fx:id="leftPanel"/>
+			<SplitPane fx:id="innerSplit" dividerPositions="0.8" orientation="VERTICAL">
+				<Pane fx:id="pane">
+					<VBox fx:id="openVBox"/>
+				</Pane>
+				<HBox fx:id="hBox"/>
+			</SplitPane>
+			<VBox fx:id="rightPanel"/>
 		</SplitPane>
 	</center>
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
-			<menus>
-				<Menu mnemonicParsing="false" text="File">
-					<items>
-						<MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open" />
-						<!-- <MenuItem mnemonicParsing="false" onAction="#onDebugOpen" text="Open" /> -->
-						<MenuItem fx:id="save" mnemonicParsing="false" onAction="#onSave" text="Save" disable="true"/>
-					</items>
-				</Menu>
-				<Menu mnemonicParsing="false" text="Edit">
-					<items>
-						<CheckMenuItem fx:id="gridCheck" disable="true" mnemonicParsing="false" text="Grid" />
-						<CheckMenuItem fx:id="invisibleCheck" disable="true" mnemonicParsing="false" text="Show invisible objects" />
-					</items>
-				</Menu>
-			</menus>
+			<Menu mnemonicParsing="false" text="File">
+				<MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open"/>
+				<MenuItem fx:id="save" mnemonicParsing="false" onAction="#onSave" text="Save" disable="true"/>
+				<MenuItem fx:id="export" mnemonicParsing="false" onAction="#onExport" text="Export" disable="true"/>
+			</Menu>
+			<Menu mnemonicParsing="false" text="Edit">
+				<CheckMenuItem fx:id="gridCheck" disable="true" mnemonicParsing="false" text="Grid"/>
+				<CheckMenuItem fx:id="invisibleCheck" disable="true" mnemonicParsing="false"
+							   text="Show invisible objects"/>
+				<CheckMenuItem fx:id="triangleCheck" disable="true" mnemonicParsing="false" text="Show Triangulation"/>
+			</Menu>
 		</MenuBar>
 	</top>
 </BorderPane>

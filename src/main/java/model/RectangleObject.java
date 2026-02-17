@@ -22,4 +22,10 @@ public class RectangleObject extends GameObject {
 		nbRead = length;
 		return nbRead;
 	}
+
+	public String getExport() {
+		return super.getExport() +
+				"\n\tminPos: (" + (xAbs + minX) + ", " + (yAbs + minY) + ")" +
+                "\n\tmaxPos: (" + (xAbs + maxX) + ", " + (yAbs + maxY) + ")";
+	}
 }

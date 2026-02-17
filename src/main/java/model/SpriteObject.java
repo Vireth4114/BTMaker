@@ -103,7 +103,7 @@ public class SpriteObject extends GameObject {
 
 	@Override
 	public void onClick(Controller controller) {
-		System.out.println(controller.subSelected.get());
+		super.onClick(controller);
 		if (controller.subSelected.get() != -1) {
 			controller.hBox.getChildren().add(new Label(String.valueOf(imageIDs[controller.subSelected.get()])));
 		}
@@ -116,11 +116,32 @@ public class SpriteObject extends GameObject {
 		if (imageIDs.length == 0 || imageIDs[0] == 358) return shapes;
 		for (int i = 0; i < count; i++) {
 			Group sprite = controller.getImageById((short) imageIDs[i]);
-			sprite.setLayoutX(controller.transX(trueX[i]));
-			sprite.setLayoutY(controller.transY(trueY[i]));
+			sprite.setLayoutX(controller.levelXtoViewX(trueX[i]));
+			sprite.setLayoutY(controller.levelYtoViewY(trueY[i]));
 			shapes.add(sprite);
 			sprites.add(sprite);
 		}
 		return shapes;
+	}
+
+	@Override
+	public String getExport() {
+		StringBuilder export = new StringBuilder(super.getExport());
+		for (int i = 0; i < imageIDs.length; i++) {
+			export.append("\n\t");
+			int imageId = imageIDs[i];
+			export.append("imagePos: (").append(trueX[i]).append(", ").append(trueY[i]).append(")\n");
+			ImageMap myImage = Controller.imageMap.get((short) imageId);
+			if (myImage != null) {
+				export.append(myImage.toString("\t\t"));
+			} else {
+				for (SubSprite subspr: Controller.compounds.get((short) imageId)) {
+					export.append("\t\tsubPos: (").append(subspr.drawX).append(", ").append(subspr.drawY).append(")\n");
+					export.append(Controller.imageMap.get((short) subspr.image).toString("\t\t\t")).append("\n");
+				}
+			}
+
+		}
+		return export.toString();
 	}
 }

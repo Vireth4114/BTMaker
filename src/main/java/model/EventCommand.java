@@ -23,6 +23,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Textbox (s "+dis.readShort()+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Textbox "+dis.readShort();
+		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -35,6 +38,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Start animation of {"+dis.readShort()+"}");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Start animation of "+dis.readShort();
+		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -45,6 +51,9 @@ public enum EventCommand {
 	EVENT_TERMINATE{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Destroy event ["+dis.readByte()+"]");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Destroy event "+dis.readByte();
 		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -57,6 +66,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Enable event ["+dis.readByte()+"]");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Enable event "+dis.readByte();
+		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -67,6 +79,9 @@ public enum EventCommand {
 	EVENT_START{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Start event ["+dis.readByte()+"]");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Start event "+dis.readByte();
 		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -79,6 +94,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Pause event ["+dis.readByte()+"]");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Pause event "+dis.readByte();
+		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -89,6 +107,9 @@ public enum EventCommand {
 	WAIT{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Wait for (s "+dis.readShort()+")ms");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Wait for "+dis.readShort()+"ms";
 		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -114,6 +135,21 @@ public enum EventCommand {
 				if (newVal == 0) return toBox("Restore Gameplay");
 			}
 			return toBox("Set variable (b "+varNum+") to (i "+newVal+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			int newVal = dis.readInt();
+			if (varNum == 0) {
+				if (newVal == 1) return "Kill Bounce";
+				if (newVal == 2) return "Finish Level";
+			}
+			if (varNum == 1) {
+				if (newVal == 3) return "Froze Gameplay";
+				if (newVal == 0) return "Restore Gameplay";
+			}
+			return "Set variable "+varNum+" to "+newVal;
 		}
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			String text = (((Label)hBox.getChildren().get(0)).getText());
@@ -144,6 +180,12 @@ public enum EventCommand {
 			dis.skip(1);
 			return toBox("Add (i "+dis.readInt()+") to variable (s "+varNum+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			return "Add "+dis.readInt()+" to variable "+varNum;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			byte varNum = Byte.parseByte(((TextField)hBox.getChildren().get(3)).getText());
@@ -163,6 +205,12 @@ public enum EventCommand {
 			byte varNum = dis.readByte();
 			dis.skip(1);
 			return toBox("Subtract (i "+dis.readInt()+") to variable (s "+varNum+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			return "Subtract "+dis.readInt()+" to variable "+varNum;
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -184,6 +232,12 @@ public enum EventCommand {
 			dis.skip(1);
 			return toBox("Multiply (i "+dis.readInt()+") to variable (s "+varNum+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			return "Multiply "+dis.readInt()+" to variable "+varNum;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			byte varNum = Byte.parseByte(((TextField)hBox.getChildren().get(3)).getText());
@@ -203,6 +257,12 @@ public enum EventCommand {
 			byte varNum = dis.readByte();
 			dis.skip(1);
 			return toBox("Divide variable (s "+varNum+") by (i "+dis.readInt()+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			return "Divide variable "+varNum+" by "+dis.readInt();
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -224,6 +284,13 @@ public enum EventCommand {
 			dis.skip(1);
 			int cmp = dis.readInt();
 			return toBox("Go to step (b "+dis.readByte()+") if variable (s "+varNum+") ≠ (i "+cmp+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			int cmp = dis.readInt();
+			return "Go to step "+dis.readByte()+" if variable "+varNum+" ≠ "+cmp;
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -248,6 +315,13 @@ public enum EventCommand {
 			int cmp = dis.readInt();
 			return toBox("Go to step (b "+dis.readByte()+") if variable (s "+varNum+") = (i "+cmp+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			int cmp = dis.readInt();
+			return "Go to step "+dis.readByte()+" if variable "+varNum+" = "+cmp;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			byte varNum = Byte.parseByte(((TextField)hBox.getChildren().get(3)).getText());
@@ -270,6 +344,13 @@ public enum EventCommand {
 			dis.skip(1);
 			int cmp = dis.readInt();
 			return toBox("Go to step (b "+dis.readByte()+") if variable (s "+varNum+") >= (i "+cmp+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			int cmp = dis.readInt();
+			return "Go to step "+dis.readByte()+" if variable "+varNum+" >= "+cmp;
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -294,6 +375,13 @@ public enum EventCommand {
 			int cmp = dis.readInt();
 			return toBox("Go to step (b "+dis.readByte()+") if variable (s "+varNum+") <= (i "+cmp+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			dis.skip(1);
+			byte varNum = dis.readByte();
+			dis.skip(1);
+			int cmp = dis.readInt();
+			return "Go to step "+dis.readByte()+" if variable "+varNum+" <= "+cmp;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			byte varNum = Byte.parseByte(((TextField)hBox.getChildren().get(3)).getText());
@@ -317,6 +405,13 @@ public enum EventCommand {
 			int duration = dis.readInt();
 			return toBox("Move object {"+obj+"} by x=(i "+(int)Math.round((x*duration)/65536.0)+") y=(i "+(int)Math.round((y*duration)/65536.0)+") in (i "+duration+")ms");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			short obj = dis.readShort();
+			int x = dis.readInt();
+			int y = dis.readInt();
+			int duration = dis.readInt();
+			return "Move object "+obj+" by x="+(int)Math.round((x*duration)/65536.0)+" y="+(int)Math.round((y*duration)/65536.0)+" in "+duration+"ms";
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			short object = Short.parseShort(((TextField)hBox.getChildren().get(1)).getText());
@@ -338,6 +433,9 @@ public enum EventCommand {
 	OBJ_ROTATE{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Rotate object {"+dis.readShort()+"} by (f "+Math.round(100 * Math.toDegrees(dis.readInt()/65536.0)) / 100.0+")° in (i "+dis.readInt()+")ms");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Rotate object "+dis.readShort()+" by "+Math.round(100 * Math.toDegrees(dis.readInt()/65536.0)) / 100.0+"° in "+dis.readInt()+"ms";
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -365,6 +463,13 @@ public enum EventCommand {
 				return toBox("Set position of object {"+dest+"} to x=(s "+Math.round(dis.readInt()/65536.0)+") y=(s "+Math.round(dis.readInt()/65536.0)+")");
 			return toBox("Set position of object {"+dest+"} from object {"+src+"}");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			short dest = dis.readShort();
+			short src = dis.readShort();
+			if (src < 0)
+				return "Set position of object "+dest+" to x="+Math.round(dis.readInt()/65536.0)+" y="+Math.round(dis.readInt()/65536.0);
+			return "Set position of object "+dest+" from object "+src;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -386,6 +491,11 @@ public enum EventCommand {
 			short src = dis.readShort();
 			return toBox("Attach object {"+dest+"} to object {"+src+"}");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			short dest = dis.readShort();
+			short src = dis.readShort();
+			return "Attach object "+dest+" to object "+src;
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -399,6 +509,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Detach object {"+dis.readShort()+"}");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Detach object "+dis.readShort();
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -410,6 +523,9 @@ public enum EventCommand {
 	BRANCH{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Go to step (b "+dis.readByte()+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Go to step "+dis.readByte();
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -423,15 +539,24 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Uhhh what");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Uhhh what";
+		}
 	},
 	END{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("End event");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "End event";
+		}
 	},
 	WAIT_ACTOR_GONE{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Wait for object {"+dis.readShort()+"} to be gone");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Wait for object "+dis.readShort()+" to be gone";
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -445,16 +570,22 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Checkpoint");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Checkpoint";
+		}
 	},
 	PUSH{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Push Bounce by x=(s "+dis.readShort()+") y=(s "+dis.readShort()+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Push Bounce by x="+dis.readShort()+" y="+dis.readShort();
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
-			dos.writeShort(Controller.instance.level.bounceObject);
+			dos.writeShort(Controller.level.bounceObject);
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(1)).getText()));
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(3)).getText()));
 			return Arrays.asList(ArrayUtils.toObject(baos.toByteArray()));
@@ -464,11 +595,14 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Change Bounce gravity by x=(s "+dis.readShort()+") y=(s "+dis.readShort()+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Change Bounce gravity by x="+dis.readShort()+" y="+dis.readShort();
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
-			dos.writeShort(Controller.instance.level.bounceObject);
+			dos.writeShort(Controller.level.bounceObject);
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(1)).getText()));
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(3)).getText()));
 			return Arrays.asList(ArrayUtils.toObject(baos.toByteArray()));
@@ -478,11 +612,14 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Accelerate Bounce by x=(s "+dis.readShort()+") y=(s "+dis.readShort()+")");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Accelerate Bounce by x="+dis.readShort()+" y="+dis.readShort();
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
-			dos.writeShort(Controller.instance.level.bounceObject);
+			dos.writeShort(Controller.level.bounceObject);
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(1)).getText()));
 			dos.writeShort(Short.parseShort(((TextField)hBox.getChildren().get(3)).getText()));
 			return Arrays.asList(ArrayUtils.toObject(baos.toByteArray()));
@@ -503,7 +640,7 @@ public enum EventCommand {
 						str += "and disable its collisions";
 					else
 						str = "Disable collisions of object {"+obj+"}";
-				}else {
+				} else {
 					if (str.length() != 0)
 						str += "and enable its collisions";
 					else
@@ -524,6 +661,42 @@ public enum EventCommand {
 				}
 			}
 			return toBox(str);
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			short obj = dis.readShort();
+			int flags = dis.readInt();
+			int values = dis.readInt();
+			String str = "";
+			if ((flags & 1) != 0) {
+				str = "Set object "+obj+" depth to "+(values & 0x1f);
+			}
+			if ((flags & 0x20) != 0) {
+				if ((values & 0x20) != 0) {
+					if (!str.isEmpty())
+						str += " and disable its collisions";
+					else
+						str = "Disable collisions of object "+obj;
+				}else {
+					if (!str.isEmpty())
+						str += " and enable its collisions";
+					else
+						str = "Enable collisions of object "+obj;
+				}
+			}
+			if ((flags & 0x80) != 0) {
+				if ((values & 0x80) != 0) {
+					if (!str.isEmpty())
+						str += " and make it invisible";
+					else
+						str += "Make object "+obj+" invisible";
+				} else {
+					if (!str.isEmpty())
+						str += " and make it visible";
+					else
+						str += "Make object "+obj+" visible";
+				}
+			}
+			return str;
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -562,6 +735,9 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Focus camera on object {"+dis.readShort()+"}");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Focus camera on object "+dis.readShort();
+		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -573,6 +749,9 @@ public enum EventCommand {
 	CAMERA_SETPARAM{
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Snap=(b "+dis.readByte()+") BounceFactor=(s "+dis.readShort()+") StabilizeSpeed=(s "+dis.readShort()+")");
+		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Snap="+dis.readByte()+" BounceFactor="+dis.readShort()+" StabilizeSpeed="+dis.readShort();
 		}
 
 		public List<Byte> toData(HBox hBox) throws NumberFormatException, IOException {
@@ -588,10 +767,15 @@ public enum EventCommand {
 		public HBox parse(DataInputStream dis) throws IOException {
 			return toBox("Reset camera");
 		}
+		public String parseString(DataInputStream dis) throws IOException {
+			return "Reset camera";
+		}
 	};
 
 	public HBox parse(DataInputStream dis) throws IOException {return new HBox();}
-	
+
+	public String parseString(DataInputStream dis) throws IOException {return "";}
+
 	public HBox toBox(String str) {
 		HBox hBox = new HBox();
 		hBox.setSpacing(2);
@@ -646,7 +830,7 @@ public enum EventCommand {
 					hBox.getChildren().add(field);
 				} else if (current == 2) {
 					hBox.getChildren().add(new FieldEvent(Byte.parseByte(sb.toString())));
-				} else if (current == 3) {
+				} else {
 					hBox.getChildren().add(new FieldObject(Short.parseShort(sb.toString())));
 				}
 				switch (c) {

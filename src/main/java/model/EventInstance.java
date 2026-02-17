@@ -1,11 +1,11 @@
 package model;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -13,11 +13,19 @@ import javafx.scene.layout.HBox;
 public class EventInstance {
 	public EventCommand command;
 	public HBox hBox;
+	public String string;
 	
-	public EventInstance(EventCommand command, DataInputStream data) {
+	public EventInstance(EventCommand command, DataInputStream data, boolean doHbox) {
 		this.command = command;
 		try {
-			hBox = command.parse(data);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			data.transferTo(baos);
+			data = new DataInputStream(new ByteArrayInputStream(baos.toByteArray()));
+			DataInputStream data2 = new DataInputStream(new ByteArrayInputStream(baos.toByteArray()));
+			if (doHbox) {
+				hBox = command.parse(data);
+			}
+			string = command.parseString(data2);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -64,11 +72,11 @@ public class EventInstance {
 				listBytes.add(new byte[30]);
 			for (byte[] bytes: listBytes) {
 				DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-				EventInstance myEvent = new EventInstance(event, dis);
+				EventInstance myEvent = new EventInstance(event, dis, true);
 				for (Node child: myEvent.hBox.getChildren()) {
 					if (child instanceof TextField) {
 						((TextField)child).setText("");
-						((TextField)child).setDisable(true);
+						child.setDisable(true);
 					}
 				}
 				list.add(myEvent);

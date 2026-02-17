@@ -1,10 +1,8 @@
 package model;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -20,16 +18,15 @@ public class Level {
 	public int yMax;
 	public HashMap<Short, Short> deletedObjects = new HashMap<Short, Short>();
 
-	public Level(String path) throws IOException {
+	public Level(Path path) throws IOException {
 		this.objects = new ArrayList<GameObject>();
 		readObjects(path);
 	}
 
-	public void readObjects(String path) throws IOException {
+	public void readObjects(Path path) throws IOException {
 		nextEvent = 0;
-		System.out.println(path);
-		FileInputStream fis = new FileInputStream(path);
-		DataInputStream dis = new DataInputStream(fis);
+		InputStream is = Files.newInputStream(path);
+		DataInputStream dis = new DataInputStream(is);
 		dis.skip(14);
 		short id = 0;
 		byte type;
@@ -75,14 +72,14 @@ public class Level {
 		}
 		countEvent = nextEvent;
 		dis.close();
-		fis.close();
+		is.close();
 	}
 
-	public int writeObjects(String path, String originalPath) throws IOException {
-		FileOutputStream fos = new FileOutputStream(path);
-		DataOutputStream dos = new DataOutputStream(fos);
-		FileInputStream fisOG = new FileInputStream(originalPath);
-		DataInputStream disOG = new DataInputStream(fisOG);
+	public int writeObjects(Path path, Path originalPath) throws IOException {
+		OutputStream os = Files.newOutputStream(path);
+		DataOutputStream dos = new DataOutputStream(os);
+		InputStream isOG = Files.newInputStream(originalPath);
+		DataInputStream disOG = new DataInputStream(isOG);
 		dos.write(disOG.readNBytes(8));
 		dos.writeShort(objects.size());
 		disOG.skip(2);
@@ -93,7 +90,6 @@ public class Level {
 		short deletedCount = 0;
 		for (GameObject obj : objects) {
 			if (obj.initialID != idTester++) {
-				System.out.println(idTester);
 				disOG.skip(3 + deletedObjects.get((short) (idTester++ - ++deletedCount)));
 			}
 			obj.write(dos, disOG);
@@ -101,8 +97,8 @@ public class Level {
 		dos.writeByte(127);
 		dos.close();
 		disOG.close();
-		fos.close();
-		fisOG.close();
+		os.close();
+		isOG.close();
 		int totalLength = 15;
 		for (GameObject obj : objects) {
 			totalLength += obj.length + 3;
