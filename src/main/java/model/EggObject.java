@@ -14,8 +14,8 @@ public class EggObject extends GameObject {
 	@Override
 	public List<Node> getShapes(Controller controller) {
 		Node sprite = controller.getImageById((short) 208);
-		sprite.setLayoutX(controller.transX(xAbs));
-		sprite.setLayoutY(controller.transY(yAbs));
+		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
+		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		return Arrays.asList(new Node[] { sprite });
 	}
 }

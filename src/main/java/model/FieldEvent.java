@@ -11,7 +11,7 @@ public class FieldEvent extends TextField {
 			if (newV == "") return;
 			try {
 				byte v = Byte.parseByte(newV);
-				if (0 > v || v >= Controller.instance.level.countEvent)
+				if (0 > v || v >= Controller.level.countEvent)
 					setText(prevV);
 			} catch (NumberFormatException e) {
 				setText(prevV);

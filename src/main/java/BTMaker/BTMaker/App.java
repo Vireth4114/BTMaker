@@ -11,8 +11,6 @@ import java.io.IOException;
 
 public class App extends Application {
 
-    private static Scene scene;
-
     @Override
     public void start(Stage stage) throws IOException {
     	stage.getIcons().add(new Image("/icon.png"));
@@ -20,10 +18,10 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/btMaker.fxml"));
         Controller controller = new Controller();
         fxmlLoader.setController(controller);
-        scene = new Scene(fxmlLoader.load(), 1200, 675);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, evt -> controller.onKeyPress(evt));
-        scene.setOnKeyReleased(evt -> controller.onKeyReleased(evt));
-        scene.getStylesheets().add("/test.css");
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 675);
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, controller::onKeyPress);
+        scene.setOnKeyReleased(controller::onKeyReleased);
+        scene.getStylesheets().add("/style.css");
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.setMinWidth(950);

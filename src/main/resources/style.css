@@ -1,7 +1,12 @@
-.text-field, .button, .choice-box, .check-box .box, .combo-box {
+.text-field, .button, .choice-box, .check-box .box, .combo-box, .titled-pane .title, .titled-pane .content {
 	-fx-background-color: transparent;
 	-fx-text-fill: white;
 	-fx-border-color: white;
+}
+
+.titled-pane {
+	-fx-text-fill: white;
+	-fx-collapsible: false;
 }
 
 .list-cell, .list-view {
@@ -11,6 +16,10 @@
 .text-field {
 	-fx-pref-width: 50px;
 	-fx-alignment: center;
+}
+
+.left-field {
+	-fx-alignment: center-left;
 }
 
 .button {
@@ -26,11 +35,11 @@
 }
 
 .menu-item:hover, .button:hover {
-	-fx-background-radius: 1000;	
+	-fx-background-radius: 1000;
 }
 
-#vBox, #dragBox, #hBox, .context-menu, .viewport, .scroll-bar:vertical {
-	-fx-background-color: #303030;	
+#leftPanel, #rightPanel, #hBox, .context-menu, .viewport, .scroll-bar:vertical {
+	-fx-background-color: #303030;
 }
 
 .scroll-pane {
@@ -48,4 +57,10 @@
 
 .check-box:selected .box .mark {
 	-fx-background-color: white;
+}
+
+#scaleBox {
+	-fx-padding: 10px;
+	-fx-spacing: 10px;
+	-fx-max-height: 0px;
 }

@@ -7,28 +7,24 @@
 	<version>0.2.0-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>13</version>
+			<version>27-ea+4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
-			<version>13</version>
+			<version>27-ea+4</version>
 		</dependency>
 		<dependency>
-			<groupId>net.lingala.zip4j</groupId>
-			<artifactId>zip4j</artifactId>
-			<version>1.3.2</version>
-		</dependency><dependency>
-		  <groupId>org.apache.commons</groupId>
-		  <artifactId>commons-lang3</artifactId>
-		  <version>3.14.0</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.20.0</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -38,7 +34,10 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<release>11</release>
+					<release>25</release>
+					<jdkToolchain>
+						<version>25</version>
+					</jdkToolchain>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -49,22 +48,69 @@
 					<execution>
 						<id>default-cli</id>
 						<configuration>
-							<mainClass>BTMaker.BTMaker.App</mainClass>
+							<mainClass>BTMaker.BTMaker.TrueMain</mainClass>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>BTMaker.BTMaker.App</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>BTMaker.BTMaker.TrueMain</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>2.5.0</version>
+				<executions>
+					<execution>
+						<id>l4j-gui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>target/BTMaker.exe</outfile>
+							<jar>target/${project.artifactId}-${project.version}.jar</jar>
+							<dontWrapJar>false</dontWrapJar>
+							<errTitle>BTMaker</errTitle>
+							<classPath>
+								<mainClass>BTMaker.BTMaker.TrueMain</mainClass>
+							</classPath>
+							<jre>
+								<path>./jre</path>
+							</jre>
+							<versionInfo>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtFileVersion>1.0.0.0</txtFileVersion>
+								<fileDescription>The Bounce Tales Level Editor</fileDescription>
+								<copyright>Copyright (c) 2024</copyright>
+								<companyName>Vireth</companyName>
+								<productVersion>3.0.0.0</productVersion>
+								<txtProductVersion>${project.version}</txtProductVersion>
+								<productName>BTMaker</productName>
+								<internalName>BTMaker</internalName>
+								<originalFilename>btmaker-original.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

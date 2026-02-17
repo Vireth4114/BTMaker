@@ -91,6 +91,7 @@ public class EventObject extends RectangleObject {
 	
 	@Override
 	public void onClick(Controller controller) {
+		super.onClick(controller);
 		controller.hBox.getChildren().add(new Label(String.valueOf(eventId)));
 		GridPane simpleGrid = new GridPane();
 		simpleGrid.setAlignment(Pos.CENTER);
@@ -147,7 +148,7 @@ public class EventObject extends RectangleObject {
 			byte[] bytes = new byte[eventData.get(i).size()];
 			for (int j = 0; j < eventData.get(i).size(); j++) bytes[j] = eventData.get(i).get(j);
 			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
-			EventInstance event = new EventInstance(EventCommand.values()[val], dis);
+			EventInstance event = new EventInstance(EventCommand.values()[val], dis, true);
 			HBox currEvent = event.hBox;
 			currEvent.setMinWidth(400);
 			for (Node child: event.hBox.getChildren()) {
@@ -199,7 +200,7 @@ public class EventObject extends RectangleObject {
 					eventGrid.add(eventToShow, j%3, j/3);
 				}
 				Scene scene = new Scene(eventGrid);
-				scene.getStylesheets().add("/test.css");
+				scene.getStylesheets().add("/style.css");
 				stage.setScene(scene);
 				stage.show();
 			});
@@ -232,10 +233,10 @@ public class EventObject extends RectangleObject {
 
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		double x1 = controller.transX(xAbs + minX);
-		double x2 = controller.transX(xAbs + maxX);
-		double y1 = controller.transY(yAbs + minY);
-		double y2 = controller.transY(yAbs + maxY);
+		double x1 = controller.levelXtoViewX(xAbs + minX);
+		double x2 = controller.levelXtoViewX(xAbs + maxX);
+		double y1 = controller.levelYtoViewY(yAbs + minY);
+		double y2 = controller.levelYtoViewY(yAbs + maxY);
 		Rectangle r = new Rectangle(x1, y1, x2-x1, y2-y1);
 		r.setFill(Color.TRANSPARENT);
 		r.setStroke(Color.BLUE);
@@ -248,5 +249,35 @@ public class EventObject extends RectangleObject {
 		return "EventObject [state=" + state + ", triggerLeave=" + triggerLeave + ", repeatable=" + repeatable
 				+ ", triggerId=" + triggerId + ", eventList=" + eventList
 				+ ", eventData=" + eventData + "] "+super.toString();
+	}
+
+	public String getExport() {
+		StringBuilder str = new StringBuilder(super.getExport());
+		str.append("\n\tstate: ").append(state);
+		str.append("\n\ttriggerLeave: ").append(triggerLeave);
+		str.append("\n\trepeatable: ").append(repeatable);
+		str.append("\n\ttriggerId: ").append(triggerId);
+		str.append("\n\tevents:");
+		for (int i = 0; i < eventList.size(); i++) {
+			int val = eventList.get(i);
+			byte[] bytes = new byte[eventData.get(i).size()];
+			for (int j = 0; j < eventData.get(i).size(); j++) bytes[j] = eventData.get(i).get(j);
+			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
+			EventInstance event = new EventInstance(EventCommand.values()[val], dis, false);
+			str.append("\n\t\t").append(event.string);
+		}
+		return str.toString();
+	}
+
+	public void createParams() {
+		minX = -50;
+		minY = 50;
+		maxX = 50;
+		maxY = -50;
+		state = 0;
+		triggerLeave = 0;
+		repeatable = 0;
+		triggerId = Controller.level.bounceObject;
+		eventId = (byte) Controller.level.objects.stream().filter(e -> e.type == 6).count();
 	}
 }

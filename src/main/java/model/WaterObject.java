@@ -57,6 +57,7 @@ public class WaterObject extends RectangleObject {
 
 	@Override
 	public void onClick(Controller controller) {
+		super.onClick(controller);
 		GridPane grid = new GridPane();
 		TextField topField = new TextField();
 		topField.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
@@ -95,13 +96,23 @@ public class WaterObject extends RectangleObject {
 
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		double x1 = controller.transX(xAbs + minX);
-		double x2 = controller.transX(xAbs + maxX);
-		double y1 = controller.transY(yAbs + minY);
-		double y2 = controller.transY(yAbs + maxY);
+		double x1 = controller.levelXtoViewX(xAbs + minX);
+		double x2 = controller.levelXtoViewX(xAbs + maxX);
+		double y1 = controller.levelYtoViewY(yAbs + minY);
+		double y2 = controller.levelYtoViewY(yAbs + maxY);
 		Rectangle r = new Rectangle(x1, y1, x2-x1, y2-y1);
 		if (isWater) r.setFill(Color.rgb(17, 17, 238, 68.0/255.0));
 		else r.setFill(new Color(1, 0, 0, 68.0/255.0));
 		return Arrays.asList(r);
+	}
+
+	@Override
+	public String getExport() {
+		return super.getExport() +
+				"\n\tgravityTop: "+gravityTop +
+				"\n\tgravityRight: "+gravityRight +
+				"\n\tgravityBottom: "+gravityBottom +
+				"\n\tgravityLeft: "+gravityLeft +
+				"\n\tisWater: "+isWater;
 	}
 }

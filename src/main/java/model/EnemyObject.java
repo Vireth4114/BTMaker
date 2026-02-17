@@ -45,10 +45,10 @@ public class EnemyObject extends GameObject {
 
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		Line pathLine = new Line(controller.transX(xAbs + path.getStartX()),
-							   controller.transY(yAbs + path.getStartY()),
-							   controller.transX(xAbs + path.getEndX()),
-							   controller.transY(yAbs + path.getEndY()));
+		Line pathLine = new Line(controller.levelXtoViewX(xAbs + path.getStartX()),
+							   controller.levelYtoViewY(yAbs + path.getStartY()),
+							   controller.levelXtoViewX(xAbs + path.getEndX()),
+							   controller.levelYtoViewY(yAbs + path.getEndY()));
 		pathLine.setStroke(Color.BLUE);
 		pathLine.setStrokeWidth(5);
 		MovingCircle m1 = new MovingCircle(pathLine.getStartX(), pathLine.getStartY(), 0, this);
@@ -59,9 +59,19 @@ public class EnemyObject extends GameObject {
 			case 2: image = 504; break;
 		}
 		Node sprite = controller.getImageById(image, id);
-		sprite.setLayoutX(controller.transX(xAbs));
-		sprite.setLayoutY(controller.transY(yAbs));
+		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
+		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		if (controller.selectedID.get() != id) return Arrays.asList(sprite);
 		return Arrays.asList(sprite, pathLine, m1, m2);
+	}
+
+	@Override
+	public String getExport() {
+		String str = super.getExport();
+		str += "\n\t" + (enemy == 0 ? "Spinner" : "Mole");
+		str += "\n\tpath: ";
+		str += "\n\t\t("+(xAbs + path.getStartX())+", "+(yAbs + path.getStartY())+")";
+		str += "\n\t\t("+(xAbs + path.getEndX())+", "+(yAbs + path.getEndY())+")";
+		return str;
 	}
 }

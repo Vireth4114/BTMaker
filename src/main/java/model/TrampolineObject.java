@@ -30,8 +30,14 @@ public class TrampolineObject extends GameObject {
 		//short image = controller.selectedID.get() == id ? imageIDs : controller.animated.get(imageIDs).get(0);
 		short image = controller.animated.get(imageIDs).get(0);
 		Node sprite = controller.getImageById(image);
-		sprite.setLayoutX(controller.transX(xAbs));
-		sprite.setLayoutY(controller.transY(yAbs));
+		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
+		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		return Arrays.asList(new Node[] { sprite });
+	}
+
+	@Override
+	public String getExport() {
+		return super.getExport() +
+				"\n\tpush: " + push;
 	}
 }

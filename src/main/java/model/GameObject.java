@@ -7,7 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BTMaker.BTMaker.Controller;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.converter.NumberStringConverter;
+
+import javax.swing.text.Position;
 
 public class GameObject {
 	public short length;
@@ -41,8 +51,8 @@ public class GameObject {
 	
 	public GameObject(short id, byte type) {
 		this.id = id;
-		if (Controller.instance.level != null) {			
-			this.initialID = (short) (Controller.instance.level.deletedObjects.size() + id);
+		if (Controller.level != null) {			
+			this.initialID = (short) (Controller.level.deletedObjects.size() + id);
 		} else {
 			this.initialID = id;
 		}
@@ -148,8 +158,53 @@ public class GameObject {
 	}
 
 	public List<Node> getShapes(Controller controller) {
-		return new ArrayList<Node>();
+		return new ArrayList<>();
+	}
+
+	public List<Node> getOverlay(Controller controller) {
+		ArrayList<Node> shapes = new ArrayList<>();
+		if (controller.ctrlHeld) {
+			double x = controller.levelXtoViewX(xAbs);
+			double y = controller.levelYtoViewY(yAbs);
+			shapes.add(new PositionCircle(x, y, this));
+		}
+		return shapes;
 	}
 	
-	public void onClick(Controller controller) {}
+	public void onClick(Controller controller) {
+		VBox vBox = new VBox();
+		vBox.setId("scaleBox");
+
+		for (String s: new String[] {"X", "Y"}) {
+			HBox hBox = new HBox();
+			hBox.setAlignment(Pos.CENTER);
+			hBox.setSpacing(5);
+			hBox.getChildren().add(new Label(s+": "));
+			TextField field = new TextField();
+            try {
+                field.setText(getClass().getField(s.toLowerCase()+"Scale").get(this).toString());
+			} catch (IllegalAccessException | NoSuchFieldException e) {
+				throw new RuntimeException(e);
+			}
+			field.textProperty().addListener((obs, prevV, newV) -> {
+				try {getClass().getField(s.toLowerCase()+"Scale").set(this, Double.parseDouble(newV));}
+				catch (NumberFormatException e) {field.setText(prevV); controller.draw();}
+				catch (IllegalAccessException | NoSuchFieldException e) {throw new RuntimeException(e);}
+			});
+			field.setMinWidth(70);
+			field.getStyleClass().add("left-field");
+			hBox.getChildren().add(field);
+			vBox.getChildren().add(hBox);
+		}
+		controller.hBox.getChildren().add(new TitledPane("Scale", vBox));
+	}
+
+	public String getExport() {
+		String str = getClass().getSimpleName();
+		str += "\n\tid: "+id;
+		str += "\n\tpos: ("+xPos+", "+yPos+")";
+		return str;
+	}
+
+	public void createParams() {}
 }

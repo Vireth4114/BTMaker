@@ -16,42 +16,60 @@ public class ImageMap {
 	public String image;
 
 	public static int readByte(DataInputStream in) {
-		try {return in.readByte();}
-		catch (IOException e) {return 0;}
+		try {
+			return in.readByte();
+		} catch (IOException e) {
+			return 0;
+		}
 	}
-	
+
 	public static int readUByte(DataInputStream in) {
-		try {return in.readByte() & 0xff;}
-		catch (IOException e) {return 0;}
+		try {
+			return in.readByte() & 0xff;
+		} catch (IOException e) {
+			return 0;
+		}
 	}
-	
+
 	public static int readShort(DataInputStream in) {
-		try {return in.readShort();}
-		catch (IOException e) {return 0;}
+		try {
+			return in.readShort();
+		} catch (IOException e) {
+			return 0;
+		}
 	}
 
 	public static int readYShort(DataInputStream in) {
-		try {return in.readShort() & 0xffff;}
-		catch (IOException e) {return 0;}
+		try {
+			return in.readShort() & 0xffff;
+		} catch (IOException e) {
+			return 0;
+		}
 	}
-	
+
 	public ImageMap(DataInputStream dis, Resource b, short baseImageId) throws IOException {
-		this(dis, b, baseImageId, false);
+		this(dis, b, baseImageId, ImageMap::readUByte);
 	}
-	
-	public ImageMap(DataInputStream dis, Resource b, short baseImageId, boolean is16) throws IOException {
-		Function<DataInputStream, Integer> func = is16 ? ImageMap::readShort : ImageMap::readUByte;
-		this.width = func.apply(dis);
-		this.height = func.apply(dis);
-		this.originX = func.apply(dis);
-		this.originY = func.apply(dis);
-		this.atlasX = func.apply(dis);
-		this.atlasY = func.apply(dis);
-		this.image = Controller.rscBatch.get(b).get(func.apply(dis) - baseImageId).name;
+
+	public ImageMap(DataInputStream dis, Resource b, short baseImageId, Function<DataInputStream, Integer> readFromStream) throws IOException {
+		this.width = readFromStream.apply(dis);
+		this.height = readFromStream.apply(dis);
+		this.originX = readFromStream.apply(dis);
+		this.originY = readFromStream.apply(dis);
+		this.atlasX = readFromStream.apply(dis);
+		this.atlasY = readFromStream.apply(dis);
+		this.image = Controller.rscBatch.get(b).get(readFromStream.apply(dis) - baseImageId).name;
 	}
 
 	@Override
 	public String toString() {
-		return width+" "+height+" ("+originX+","+originY+") ("+atlasX+","+atlasY+") "+image;
+		return toString("");
+	}
+
+	public String toString(String padding) {
+		return padding+"file: "+image+", \n"+
+				padding+"\tsize: ("+width+", "+height+"), \n"+
+				padding+"\torigin: ("+originX+", "+originY+"), \n" +
+				padding+"\tatlas: ("+atlasX+", "+atlasY+")";
 	}
 }
