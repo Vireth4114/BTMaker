@@ -8,8 +8,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import BTMaker.BTMaker.resources.ResourceType;
 import commands.*;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventTarget;
@@ -54,7 +56,7 @@ public class Controller implements Initializable {
 	public File gameFile = null;
 	public static Level level = null;
 	public ArrayList<Level> levels = new ArrayList<>(Arrays.asList(new Level[15]));
-	public double size;
+	public SimpleDoubleProperty zoomLevel = new SimpleDoubleProperty(1);
 	public double leftOffset = 0;
 	public double topOffset = 0;
 	public boolean ctrlHeld = false;
@@ -168,19 +170,19 @@ public class Controller implements Initializable {
 		leftOffset = 0;
 		topOffset = 0;
 		if ((level.xMax - level.xMin) > level.yMax-level.yMin) {
-			size = pane.getWidth()/(level.xMax-level.xMin+20);
+			zoomLevel.set(pane.getWidth()/(level.xMax-level.xMin+20));
 		} else {
-			size = pane.getHeight()/(level.yMax-level.yMin+20);
+			zoomLevel.set(pane.getHeight()/(level.yMax-level.yMin+20));
 		}
 		draw();
 	}
 
 	public void onScroll(ScrollEvent evt) {
 		if (ctrlHeld) {
-			size = Math.min(100, Math.max(0.05, size*(1 + Math.signum(evt.getDeltaY())/5)));
+			zoomLevel.set(Math.min(100, Math.max(0.05, zoomLevel.get() * (1 + Math.signum(evt.getDeltaY())/5))));
 		} else {
-			leftOffset += evt.getDeltaX()*2/size;
-			topOffset += evt.getDeltaY()*2/size;
+			leftOffset += evt.getDeltaX()*2/zoomLevel.get();
+			topOffset += evt.getDeltaY()*2/zoomLevel.get();
 		}
 		draw();
 	}
@@ -292,8 +294,8 @@ public class Controller implements Initializable {
 		} else if (isObjectSelected()) {
 			GameObject obj = level.objects.get(selectedID.get());
 			if (draggingObject) {
-				obj.xPos = (short) (objectX + Math.round((e.getX() - paneOffsetX) / size));
-				obj.yPos = (short) (objectY - Math.round((e.getY() - paneOffsetY) / size));
+				obj.xPos = (short) (objectX + Math.round((e.getX() - paneOffsetX) / zoomLevel.get()));
+				obj.yPos = (short) (objectY - Math.round((e.getY() - paneOffsetY) / zoomLevel.get()));
 				for (GameObject obj1 : level.objects) {
 					obj1.absSet = false;
 				}
@@ -301,24 +303,24 @@ public class Controller implements Initializable {
 					obj1.doAbs(level.objects);
 				}
 			} else if (rectangleResizing != 0) {
-				short x = (short) (objectX + Math.round((e.getX()- paneOffsetX)/size));
-				short y = (short) (objectY - Math.round((e.getY()- paneOffsetY)/size));
+				short x = (short) (objectX + Math.round((e.getX()- paneOffsetX)/ zoomLevel.get()));
+				short y = (short) (objectY - Math.round((e.getY()- paneOffsetY)/ zoomLevel.get()));
 				resizeRectangle((RectangleObject) obj, rectangleResizing, x, y);
 			} else if (subSelected.get() != -1) {
 				SpriteObject sObj = (SpriteObject) obj;
-				sObj.trueX[subSelected.get()] = (short) (objectX + Math.round((e.getX() - paneOffsetX) / size));
-				sObj.trueY[subSelected.get()] = (short) (objectY - Math.round((e.getY() - paneOffsetY) / size));
+				sObj.trueX[subSelected.get()] = (short) (objectX + Math.round((e.getX() - paneOffsetX) / zoomLevel.get()));
+				sObj.trueY[subSelected.get()] = (short) (objectY - Math.round((e.getY() - paneOffsetY) / zoomLevel.get()));
 				sObj.xList[subSelected.get()] = sObj.trueX[subSelected.get()] - sObj.xAbs;
 				sObj.yList[subSelected.get()] = sObj.trueY[subSelected.get()] - sObj.yAbs;
 			} else {
-				leftOffset += (e.getX()- paneOffsetX)/size;
-				topOffset += (e.getY()- paneOffsetY)/size;
+				leftOffset += (e.getX()- paneOffsetX)/ zoomLevel.get();
+				topOffset += (e.getY()- paneOffsetY)/ zoomLevel.get();
 				paneOffsetX = e.getX();
 				paneOffsetY = e.getY();
 			}
 		} else {
-			leftOffset += (e.getX()- paneOffsetX)/size;
-			topOffset += (e.getY()- paneOffsetY)/size;
+			leftOffset += (e.getX()- paneOffsetX)/ zoomLevel.get();
+			topOffset += (e.getY()- paneOffsetY)/ zoomLevel.get();
 			paneOffsetX = e.getX();
 			paneOffsetY = e.getY();
 		}
@@ -342,8 +344,8 @@ public class Controller implements Initializable {
 					(short) viewXtoLevelX(e.getX()), (short) viewYtoLevelY(e.getY())));
 		}
 		if (rectangleResizing != 0) {
-			short x = (short) (objectX + Math.round((e.getX()- paneOffsetX)/size));
-			short y = (short) (objectY - Math.round((e.getY()- paneOffsetY)/size));
+			short x = (short) (objectX + Math.round((e.getX()- paneOffsetX)/ zoomLevel.get()));
+			short y = (short) (objectY - Math.round((e.getY()- paneOffsetY)/ zoomLevel.get()));
 			addToStack(new ResizeRectangle(selectedID.get(), rectangleResizing,
 					objectX, objectY, x, y));
 		}
@@ -433,8 +435,8 @@ public class Controller implements Initializable {
 	public void draw() {
 		shapeIDs.clear();
 		pane.getChildren().clear();
-		xOffset = (pane.getWidth()/size - (level.xMax-level.xMin))/2 + leftOffset;
-		yOffset = (pane.getHeight()/size - (level.yMax-level.yMin))/2 + topOffset;
+		xOffset = (pane.getWidth()/ zoomLevel.get() - (level.xMax-level.xMin))/2 + leftOffset;
+		yOffset = (pane.getHeight()/ zoomLevel.get() - (level.yMax-level.yMin))/2 + topOffset;
 
 		List<GameObject> zObjects = new ArrayList<>(level.objects);
 		zObjects.sort((o1, o2) -> o2.zcoord - o1.zcoord);
@@ -444,7 +446,7 @@ public class Controller implements Initializable {
 		}
 
 		if (grid) {
-			addGrid(Math.pow(10, 1 - Math.floor(Math.log(size) / Math.log(20))), 1);
+			addGrid(Math.pow(10, 1 - Math.floor(Math.log(zoomLevel.get()) / Math.log(20))), 1);
 		}
 
 		for (GameObject obj: zObjects) {
@@ -484,12 +486,12 @@ public class Controller implements Initializable {
 	}
 
 	public void addGrid(double gridSize, double strokeWidth) {
-		for (double x = levelXtoViewX(0) % (gridSize*size); x < borderPane.getWidth(); x += gridSize*size) {
+		for (double x = levelXtoViewX(0) % (gridSize* zoomLevel.get()); x < borderPane.getWidth(); x += gridSize* zoomLevel.get()) {
 			Line l = new Line(x, 0, x, borderPane.getHeight());
 			l.setStrokeWidth(strokeWidth);
 			pane.getChildren().add(l);
 		}
-		for (double y = levelYtoViewY(0) % (gridSize*size); y < borderPane.getHeight(); y += gridSize*size) {
+		for (double y = levelYtoViewY(0) % (gridSize* zoomLevel.get()); y < borderPane.getHeight(); y += gridSize* zoomLevel.get()) {
 			Line l = new Line(0, y, borderPane.getWidth(), y);
 			l.setStrokeWidth(strokeWidth);
 			pane.getChildren().add(l);
@@ -508,10 +510,10 @@ public class Controller implements Initializable {
 		}
 	}
 
-	public double levelXtoViewX(double x) {return (x - level.xMin + xOffset)*size;}
-	public double levelYtoViewY(double y) {return (level.yMax - y + yOffset)*size;}
-	public double viewXtoLevelX(double x) {return x/size + level.xMin - xOffset;}
-	public double viewYtoLevelY(double y) {return level.yMax - y/size + yOffset;}
+	public double levelXtoViewX(double x) {return (x - level.xMin + xOffset)* zoomLevel.get();}
+	public double levelYtoViewY(double y) {return (level.yMax - y + yOffset)* zoomLevel.get();}
+	public double viewXtoLevelX(double x) {return x/ zoomLevel.get() + level.xMin - xOffset;}
+	public double viewYtoLevelY(double y) {return level.yMax - y/ zoomLevel.get() + yOffset;}
 
 	public Group getImageById(short id) {
 		return getImageById(id, (short)-1);
@@ -532,7 +534,7 @@ public class Controller implements Initializable {
 			i.setViewport(new Rectangle2D(myImage.atlasX*SCALE, myImage.atlasY*SCALE, myImage.width*SCALE, myImage.height*SCALE));
 			i.setFitWidth(myImage.width*SCALE);
 			i.setFitHeight(myImage.height*SCALE);
-			double imageSize = 65536.0/43266.0*size/SCALE;
+			double imageSize = 65536.0/43266.0* zoomLevel.get() /SCALE;
 			i.setScaleX(imageSize);
 			i.setScaleY(imageSize);
 			g.getChildren().add(i);
@@ -707,39 +709,6 @@ public class Controller implements Initializable {
 		loadSprites();
 	}
 
-	public void onOpen(String path) throws IOException {
-		if (path == null) {
-			FileChooser fc = new FileChooser();
-			fc.getExtensionFilters().addAll(new ExtensionFilter("Java Game", "*.jar", "*.jad"), new ExtensionFilter("All Files", "*.*"));
-			gameFile = fc.showOpenDialog(null);
-		} else {
-			gameFile = new File(path);
-		}
-		if (gameFile == null)
-			return;
-
-	 	URI uri = URI.create("jar:" + gameFile.toURI());
-		try (FileSystem fs = FileSystems.newFileSystem(uri, Map.of())) {
-			for (int levelIndex = 0; levelIndex < 15; levelIndex++) {
-				Path levelPath = fs.getPath(getLevelFileName(levelIndex));
-				levels.set(levelIndex, new Level(levelPath));
-			}
-			Level cannon = new Level(fs.getPath("/bu"));
-			for (GameObject object: cannon.objects.subList(1, 4)) {
-				cannonShapes.add((GeometryObject)object);
-			}
-			cannonShapes.sort((Comparator<GameObject>) (o1, o2) -> o2.zcoord - o1.zcoord);
-		}
-	}
-
-	public String getChapterName(int chapterIndex) {
-		if (chapterIndex < 12) {
-			return "Chapter " + (chapterIndex + 1);
-		} else {
-			return "Bonus Chapter " + (chapterIndex - 11);
-		}
-	}
-
 	public void setBackgroundColor(int chapterIndex) {
 		String color = "darkorange";
 		if (chapterIndex < 4) {
@@ -754,9 +723,9 @@ public class Controller implements Initializable {
 
 	public void resetLayoutSize() {
 		if ((level.xMax - level.xMin) > level.yMax-level.yMin) {
-			size = pane.getWidth()/(level.xMax-level.xMin+20);
+			zoomLevel.set(pane.getWidth()/(level.xMax-level.xMin+20));
 		} else {
-			size = pane.getHeight()/(level.yMax-level.yMin+20);
+			zoomLevel.set(pane.getHeight()/(level.yMax-level.yMin+20));
 		}
 	}
 
@@ -1093,12 +1062,12 @@ public class Controller implements Initializable {
 		}
 		if (level != null && !nofocus) {
 			switch (evt.getCode()) {
-				case ADD:      size = Math.min(100 , size*1.1); break;
-				case SUBTRACT: size = Math.max(0.05, size*0.9); break;
-				case LEFT:     leftOffset += 100/size; break;
-				case RIGHT:    leftOffset -= 100/size; break;
-				case UP:       topOffset += 100/size; break;
-				case DOWN: 	   topOffset -= 100/size; break;
+				case ADD:      zoomLevel.set(Math.min(100 , zoomLevel.get() *1.1)); break;
+				case SUBTRACT: zoomLevel.set(Math.max(0.05, zoomLevel.get() *0.9)); break;
+				case LEFT:     leftOffset += 100/ zoomLevel.get(); break;
+				case RIGHT:    leftOffset -= 100/ zoomLevel.get(); break;
+				case UP:       topOffset += 100/ zoomLevel.get(); break;
+				case DOWN: 	   topOffset -= 100/ zoomLevel.get(); break;
 				case CONTROL:  ctrlHeld = true; break;
 				case NUMPAD0:  topOffset = 0; leftOffset = 0; resetLayoutSize(); break;
 				case DELETE:   deleteObject((short) selectedID.get()); break;

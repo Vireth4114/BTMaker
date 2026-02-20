@@ -17,7 +17,7 @@ public class BounceObject extends GameObject {
 	public List<Node> getShapes(Controller controller) {
 		double x = controller.levelXtoViewX(xAbs);
 		double y = controller.levelYtoViewY(yAbs);
-		Circle bounce = new Circle(x, y, 20 * controller.size);
+		Circle bounce = new Circle(x, y, 20 * controller.zoomLevel.get());
 		bounce.setFill(Color.RED);
 		return Arrays.asList(new Node[] { bounce });
 	}
