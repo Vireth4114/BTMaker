@@ -5,6 +5,7 @@ module BTMaker.BTMaker {
 	requires transitive javafx.graphics;
     requires org.apache.commons.lang3;
     requires java.desktop;
+    requires kotlin.stdlib;
 
     opens BTMaker.BTMaker;
     exports BTMaker.BTMaker;

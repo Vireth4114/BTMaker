@@ -15,6 +15,20 @@ public class ImageMap {
 	public int atlasY;
 	public String image;
 
+	public ImageMap(DataInputStream dis, Resource b, short baseImageId) throws IOException {
+		this(dis, b, baseImageId, ImageMap::readUByte);
+	}
+
+	public ImageMap(DataInputStream dis, Resource b, short baseImageId, Function<DataInputStream, Integer> readFromStream) throws IOException {
+		this.width = readFromStream.apply(dis);
+		this.height = readFromStream.apply(dis);
+		this.originX = readFromStream.apply(dis);
+		this.originY = readFromStream.apply(dis);
+		this.atlasX = readFromStream.apply(dis);
+		this.atlasY = readFromStream.apply(dis);
+		this.image = Controller.rscBatch.get(b).get(readFromStream.apply(dis) - baseImageId).name;
+	}
+
 	public static int readByte(DataInputStream in) {
 		try {
 			return in.readByte();
@@ -45,20 +59,6 @@ public class ImageMap {
 		} catch (IOException e) {
 			return 0;
 		}
-	}
-
-	public ImageMap(DataInputStream dis, Resource b, short baseImageId) throws IOException {
-		this(dis, b, baseImageId, ImageMap::readUByte);
-	}
-
-	public ImageMap(DataInputStream dis, Resource b, short baseImageId, Function<DataInputStream, Integer> readFromStream) throws IOException {
-		this.width = readFromStream.apply(dis);
-		this.height = readFromStream.apply(dis);
-		this.originX = readFromStream.apply(dis);
-		this.originY = readFromStream.apply(dis);
-		this.atlasX = readFromStream.apply(dis);
-		this.atlasY = readFromStream.apply(dis);
-		this.image = Controller.rscBatch.get(b).get(readFromStream.apply(dis) - baseImageId).name;
 	}
 
 	@Override
