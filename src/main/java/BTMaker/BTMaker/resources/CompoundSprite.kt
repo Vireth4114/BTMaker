@@ -1,17 +1,17 @@
 package BTMaker.BTMaker.resources
 
-import BTMaker.BTMaker.Controller
 import javafx.scene.Group
 
 class CompoundSprite(metadata: List<SubSpriteMetadata>): Group() {
     init {
-        val scaleBinding = Controller.instance.zoomLevel.multiply(ResourceManager.SPRITE_SCALE)
-
-        for (subSpriteMetadata in metadata) {
-            val subSprite = ResourceManager.getSpriteById(subSpriteMetadata.imageID.toShort())
-            subSprite.layoutXProperty().bind(scaleBinding.multiply(subSpriteMetadata.drawX))
-            subSprite.layoutYProperty().bind(scaleBinding.multiply(subSpriteMetadata.drawY))
-            children.add(subSprite)
-        }
+        children.addAll(
+            metadata.map { subSpriteMetadata ->
+                ResourceManager.sprites[subSpriteMetadata.imageID.toShort()].apply {
+                    layoutX = subSpriteMetadata.drawX.toDouble()
+                    layoutY = subSpriteMetadata.drawY.toDouble()
+                    println("Loaded subsprite with image ID ${subSpriteMetadata.imageID} at (${subSpriteMetadata.drawX}, ${subSpriteMetadata.drawY})")
+                }
+            }
+        )
     }
 }

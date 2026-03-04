@@ -9,6 +9,7 @@ module BTMaker.BTMaker {
 
     opens BTMaker.BTMaker;
     exports BTMaker.BTMaker;
+    exports BTMaker.BTMaker.resources;
     exports commands;
     exports model;
 }
