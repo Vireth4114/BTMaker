@@ -6,18 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import BTMaker.BTMaker.Controller;
-import javafx.geometry.Insets;
+import btmaker.Controller;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.NumberStringConverter;
-
-import javax.swing.text.Position;
 
 public class GameObject {
 	public short length;

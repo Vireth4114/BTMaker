@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import javafx.scene.Node;
 
 public class TrampolineObject extends GameObject {

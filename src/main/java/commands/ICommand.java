@@ -1,6 +1,6 @@
 package commands;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 
 public interface ICommand {
     void execute(Controller controller);

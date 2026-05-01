@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.function.Function;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 
 public class ImageMap {
 	public int width;

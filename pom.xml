@@ -58,7 +58,7 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<mainClass>BTMaker.BTMaker.TrueMain</mainClass>
+							<mainClass>btmaker.TrueMain</mainClass>
 							<launcher>BTMaker</launcher>
 							<jlinkImageName>jre</jlinkImageName>
 							<stripDebug>true</stripDebug>
@@ -86,7 +86,7 @@
 							<dontWrapJar>false</dontWrapJar>
 							<errTitle>BTMaker</errTitle>
 							<classPath>
-								<mainClass>BTMaker.BTMaker.TrueMain</mainClass>
+								<mainClass>btmaker.TrueMain</mainClass>
 							</classPath>
 							<jre>
 								<path>./jre</path>

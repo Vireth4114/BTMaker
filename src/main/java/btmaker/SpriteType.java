@@ -1,4 +1,4 @@
-package BTMaker.BTMaker;
+package btmaker;
 
 public enum SpriteType {
     STATIC(0),

@@ -1,4 +1,4 @@
-package BTMaker.BTMaker;
+package btmaker;
 
 import java.io.*;
 import java.net.URI;
@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import BTMaker.BTMaker.resources.ResourceType;
+import btmaker.resources.ResourceType;
 import commands.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;

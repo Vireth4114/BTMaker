@@ -1,4 +1,4 @@
-package BTMaker.BTMaker.resources
+package btmaker.resources
 
 data class MetadataLoadingContext(
     var spritesheets: List<Resource>,

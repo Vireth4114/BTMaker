@@ -1,4 +1,4 @@
-package BTMaker.BTMaker;
+package btmaker;
 
 public class TrueMain {
     public static void main(String[] args) {

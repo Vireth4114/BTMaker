@@ -1,4 +1,4 @@
-package BTMaker.BTMaker;
+package btmaker;
 
 import java.util.ArrayList;
 import java.util.Collections;

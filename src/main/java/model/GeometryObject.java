@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import BTMaker.BTMaker.Controller;
-import BTMaker.BTMaker.PolygonTriangulation;
+import btmaker.Controller;
+import btmaker.PolygonTriangulation;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;

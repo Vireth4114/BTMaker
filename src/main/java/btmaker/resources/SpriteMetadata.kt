@@ -1,4 +1,4 @@
-package BTMaker.BTMaker.resources
+package btmaker.resources
 
 import java.io.DataInputStream
 

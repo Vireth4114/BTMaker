@@ -1,6 +1,6 @@
 package commands;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import model.GameObject;
 
 public class MoveObject implements ICommand{

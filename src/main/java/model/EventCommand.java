@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;

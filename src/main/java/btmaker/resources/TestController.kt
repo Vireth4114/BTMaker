@@ -1,6 +1,6 @@
-package BTMaker.BTMaker.resources
+package btmaker.resources
 
-import BTMaker.BTMaker.resources.ResourceManager.loadResourcesFrom
+import btmaker.resources.ResourceManager.loadResourcesFrom
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Node
@@ -8,6 +8,8 @@ import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
+import java.net.URL
+import java.util.ResourceBundle
 import java.util.jar.JarFile
 
 class TestController : Initializable {
@@ -15,7 +17,7 @@ class TestController : Initializable {
     var mouseX = 0.0
     var mouseY = 0.0
 
-    override fun initialize(location: java.net.URL?, resources: java.util.ResourceBundle?) {
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
         pane.background = Background(BackgroundFill(Color.LIGHTBLUE, null, null))
         val jarFile = JarFile("""C:\Users\rapha\Documents\KEmulator\bouncetales_tasdvtete.jar""")
         loadResourcesFrom(jarFile)
@@ -25,7 +27,7 @@ class TestController : Initializable {
         for (i in 0..1000) {
             var sprite: Node
             try {
-                sprite = ResourceManager.sprites[i.toShort()]!!.apply {
+                sprite = ResourceManager.getSpriteById((i/2).toShort()).apply {
                     layoutX = x
                     layoutY = y
                 }

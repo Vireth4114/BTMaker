@@ -1,6 +1,6 @@
 package commands;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import model.SpriteObject;
 
 public class MoveSubsprite implements ICommand {

@@ -1,6 +1,6 @@
 package model;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import javafx.scene.control.TextField;
 
 public class FieldEvent extends TextField {

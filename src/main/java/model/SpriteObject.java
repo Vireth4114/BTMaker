@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import BTMaker.BTMaker.Controller;
+import btmaker.Controller;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;

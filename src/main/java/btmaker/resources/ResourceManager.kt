@@ -1,17 +1,18 @@
-package BTMaker.BTMaker.resources
+package btmaker.resources
 
 import javafx.scene.Node
 import javafx.scene.image.Image
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.util.jar.JarFile
+import kotlin.collections.iterator
 
 object ResourceManager {
     private var batchAtOffset = HashMap<Int, List<Resource>>()
     val spritesheets = HashMap<String, Image>()
-    private val compoundSpritesMetadata = HashMap<Short, List<SubSpriteMetadata>>()
-    private val animatedSpriteFrames = HashMap<Short, List<Short>>()
-    val sprites = HashMap<Short, Node>()
+    val singleSpriteMetadata = HashMap<Short, SpriteMetadata>()
+    val compoundSpriteMetadata = HashMap<Short, List<SubSpriteMetadata>>()
+    val animatedSpriteFrames = HashMap<Short, List<Short>>()
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -34,19 +35,21 @@ object ResourceManager {
         repeat(batchCount) {
             val type = ResourceType.fromCode(readByte())
             val resourceCount = readByte().toInt()
-            val batchData = resources[readShort().toInt()]
+            val batchData = resources[readShort().toInt()].apply {
+                this.type = type
+            }
 
             val resourcesInBatch = List(resourceCount) {
                 resources[readShort().toInt()]
-            }.onEach {
-                if (type == ResourceType.IMAGE && !spritesheets.containsKey(it.path)) {
-                    spritesheets[it.path] = Image(it.getInputStream(jarFile))
-                }
-            }
+            }.onEach { it.type = type }
 
             if (type == ResourceType.IMAGE) {
                 batchAtOffset[batchData.offset] = resourcesInBatch
             }
+        }
+
+        resources.filter { it.type == ResourceType.IMAGE }.forEach { png ->
+            spritesheets[png.path] = Image(png.getInputStream(jarFile))
         }
     }
 
@@ -56,14 +59,6 @@ object ResourceManager {
                 skip(offset.toLong())
                 loadSpriteBatch(this, spritesheetsInBatch)
             }
-        }
-
-        for ((id, subSprites) in compoundSpritesMetadata) {
-            sprites[id] = CompoundSprite(subSprites)
-        }
-
-        for ((id, frameIds) in animatedSpriteFrames) {
-            sprites[id] = AnimatedSprite(frameIds.map { sprites[it]!! })
         }
     }
 
@@ -122,13 +117,13 @@ object ResourceManager {
     ) {
         when (type) {
             SpriteType.SIMPLE -> {
-                sprites[spriteID] = SimpleSprite(SpriteMetadata.readFromStream(stream, metadataLoadingContext))
+                singleSpriteMetadata[spriteID] = SpriteMetadata.readFromStream(stream, metadataLoadingContext)
             }
 
             SpriteType.COMPOUND -> {
                 val is16bit = metadataLoadingContext.is16Bit
                 stream.skip(if (is16bit) 8 else 4) /* 4 Unknown values */
-                compoundSpritesMetadata[spriteID] = List(stream.readShort().toInt()) {
+                compoundSpriteMetadata[spriteID] = List(stream.readShort().toInt()) {
                     SubSpriteMetadata.readFromStream(stream, is16bit)
                 }
             }
@@ -140,6 +135,17 @@ object ResourceManager {
             }
         }
     }
+
+    // TODO: cache
+    fun getSpriteById(id: Number): Node {
+        val shortId = id.toShort()
+        singleSpriteMetadata[shortId]?.let { return SimpleSprite(it) }
+        compoundSpriteMetadata[shortId]?.let { return CompoundSprite(it) }
+        animatedSpriteFrames[shortId]?.let { id -> return AnimatedSprite(id.map { getSpriteById(it) }) }
+
+        throw IllegalArgumentException("No sprite found with ID: $id")
+    }
+
 
     fun getResourceFileInputStream(jarFile: JarFile): DataInputStream {
         val entry = jarFile.getJarEntry("a")

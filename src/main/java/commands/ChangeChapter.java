@@ -1,7 +1,6 @@
 package commands;
 
-import BTMaker.BTMaker.Controller;
-import model.GameObject;
+import btmaker.Controller;
 
 public class ChangeChapter implements ICommand{
     public int oldChapterID;

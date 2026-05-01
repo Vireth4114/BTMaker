@@ -1,4 +1,4 @@
-module BTMaker.BTMaker {
+module btmaker.btmaker {
     requires transitive javafx.base;
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
@@ -7,9 +7,9 @@ module BTMaker.BTMaker {
     requires java.desktop;
     requires kotlin.stdlib;
 
-    opens BTMaker.BTMaker;
-    exports BTMaker.BTMaker;
-    exports BTMaker.BTMaker.resources;
+    opens btmaker;
+    exports btmaker;
+    exports btmaker.resources;
     exports commands;
     exports model;
 }

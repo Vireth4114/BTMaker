@@ -1,4 +1,4 @@
-package BTMaker.BTMaker.resources
+package btmaker.resources
 
 import javafx.animation.KeyFrame
 import javafx.animation.Timeline
@@ -6,15 +6,16 @@ import javafx.scene.Group
 import javafx.scene.Node
 import javafx.util.Duration
 
-class AnimatedSprite(frames: List<Node>): Group(frames) {
-    init {
-        var index = 0
+class AnimatedSprite(frames: List<Node>, frameInterval: Double = 150.0): Group(frames) {
+    private var index = 0
+    private val timeline: Timeline
 
+    init {
         frames.forEach { it.isVisible = false }
         if (frames.isNotEmpty()) frames[0].isVisible = true
 
-        val timeline = Timeline(
-            KeyFrame(Duration.millis(150.0), {
+        timeline = Timeline(
+            KeyFrame(Duration.millis(frameInterval), {
                 frames[index].isVisible = false
                 index = (index + 1) % frames.size
                 frames[index].isVisible = true
