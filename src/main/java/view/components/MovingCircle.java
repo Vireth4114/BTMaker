@@ -1,7 +1,8 @@
-package model;
+package view.components;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import model.GameObject;
 
 public class MovingCircle extends Circle {
 	public int id;

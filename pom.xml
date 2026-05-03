@@ -50,6 +50,11 @@
 				<groupId>org.openjfx</groupId>
 				<artifactId>javafx-maven-plugin</artifactId>
 				<version>0.0.6</version>
+
+				<configuration>
+					<mainClass>btmaker.TrueMain</mainClass>
+				</configuration>
+
 				<executions>
 					<execution>
 						<id>jlink</id>
@@ -118,12 +123,6 @@
 						<goals>
 							<goal>compile</goal>
 						</goals>
-						<configuration>
-							<sourceDirs>
-								<sourceDir>src/main/java</sourceDir>
-								<sourceDir>target/generated-sources/annotations</sourceDir>
-							</sourceDirs>
-						</configuration>
 					</execution>
 					<execution>
 						<id>test-compile</id>

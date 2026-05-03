@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import btmaker.Controller;
+import btmaker.resources.ResourceManager;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -53,7 +54,7 @@ public class CannonObject extends GameObject {
 	@Override
 	public List<Node> getShapes(Controller controller) {
 		ArrayList<Node> shapes = new ArrayList<Node>();
-		Node sprite = controller.getImageById((short) 48);
+		Node sprite = ResourceManager.INSTANCE.getSpriteById((short) 48);
 		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
 		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		for (GeometryObject gObj: controller.cannonShapes) {

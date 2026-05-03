@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import btmaker.Controller;
+import btmaker.resources.ResourceManager;
 import javafx.scene.Node;
 
 public class TrampolineObject extends GameObject {
@@ -27,9 +28,7 @@ public class TrampolineObject extends GameObject {
 
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		//short image = controller.selectedID.get() == id ? imageIDs : controller.animated.get(imageIDs).get(0);
-		short image = controller.animated.get(imageIDs).get(0);
-		Node sprite = controller.getImageById(image);
+		Node sprite = ResourceManager.INSTANCE.getSpriteById(imageIDs);
 		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
 		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		return Arrays.asList(new Node[] { sprite });

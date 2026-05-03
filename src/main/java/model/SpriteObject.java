@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import btmaker.Controller;
-import javafx.scene.Group;
+import btmaker.resources.ResourceManager;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 
@@ -19,7 +20,7 @@ public class SpriteObject extends GameObject {
 	public int[] imageIDs;
 	public int[] trueX;
 	public int[] trueY;
-	public List<Group> sprites = new ArrayList<Group>();
+	public List<Node> sprites = new ArrayList<Node>();
 	
 	public SpriteObject(short id) {
 		super(id, (byte)9);
@@ -115,8 +116,10 @@ public class SpriteObject extends GameObject {
 		ArrayList<Node> shapes = new ArrayList<Node>();
 		if (imageIDs.length == 0 || imageIDs[0] == 358) return shapes;
 		for (int i = 0; i < count; i++) {
-			Group sprite = controller.getImageById((short) imageIDs[i]);
+			Node sprite = ResourceManager.INSTANCE.getSpriteById((short) imageIDs[i]);
 			sprite.setLayoutX(controller.levelXtoViewX(trueX[i]));
+			viewX.bind(Bindings.subtract((double)trueX[i], controller.leftOffset).multiply(controller.zoomLevel));
+			viewY.bind(Bindings.subtract(controller.topOffset, trueY[i]).multiply(controller.zoomLevel));
 			sprite.setLayoutY(controller.levelYtoViewY(trueY[i]));
 			shapes.add(sprite);
 			sprites.add(sprite);

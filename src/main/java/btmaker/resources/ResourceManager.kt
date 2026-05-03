@@ -5,7 +5,6 @@ import javafx.scene.image.Image
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.util.jar.JarFile
-import kotlin.collections.iterator
 
 object ResourceManager {
     private var batchAtOffset = HashMap<Int, List<Resource>>()
@@ -13,10 +12,6 @@ object ResourceManager {
     val singleSpriteMetadata = HashMap<Short, SpriteMetadata>()
     val compoundSpriteMetadata = HashMap<Short, List<SubSpriteMetadata>>()
     val animatedSpriteFrames = HashMap<Short, List<Short>>()
-
-    @JvmStatic
-    fun main(args: Array<String>) {
-    }
 
     fun loadResourcesFrom(jarFile: JarFile) {
         loadBatchMapping(jarFile)
@@ -136,7 +131,6 @@ object ResourceManager {
         }
     }
 
-    // TODO: cache
     fun getSpriteById(id: Number): Node {
         val shortId = id.toShort()
         singleSpriteMetadata[shortId]?.let { return SimpleSprite(it) }

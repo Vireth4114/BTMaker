@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import btmaker.Controller;
+import btmaker.resources.ResourceManager;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import view.components.MovingCircle;
 
 public class EnemyObject extends GameObject {
 	public Line path;
@@ -58,7 +60,7 @@ public class EnemyObject extends GameObject {
 			case 0: image = 467; break;
 			case 2: image = 504; break;
 		}
-		Node sprite = controller.getImageById(image, id);
+		Node sprite = ResourceManager.INSTANCE.getSpriteById(image);
 		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
 		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		if (controller.selectedID.get() != id) return Arrays.asList(sprite);

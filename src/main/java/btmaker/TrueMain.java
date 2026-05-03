@@ -1,7 +1,7 @@
 package btmaker;
 
 public class TrueMain {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         App.main(args);
     }
 }

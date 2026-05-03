@@ -1,4 +1,4 @@
-module btmaker.btmaker {
+module btmaker {
     requires transitive javafx.base;
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
@@ -12,4 +12,7 @@ module btmaker.btmaker {
     exports btmaker.resources;
     exports commands;
     exports model;
+    exports event;
+    exports view.components;
+    exports model.objects;
 }

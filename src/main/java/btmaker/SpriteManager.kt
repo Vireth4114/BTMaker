@@ -1,4 +1,0 @@
-package btmaker
-
-class SpriteManager {
-}

@@ -1,4 +1,4 @@
-package model;
+package event;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

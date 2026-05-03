@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import btmaker.Controller;
+import event.EventCommand;
+import event.EventInstance;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

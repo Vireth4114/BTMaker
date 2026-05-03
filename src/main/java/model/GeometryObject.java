@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
+import view.components.MovingCircle;
 
 public class GeometryObject extends GameObject {
 
@@ -242,6 +243,7 @@ public class GeometryObject extends GameObject {
 		for (int i = 0; i < len; i++) {
 			result[len-i-1] = (byte) (Integer.parseInt(splitted[i], 2) - 2*(Integer.parseInt(splitted[i], 2) & 128));
 		}
+
 		return result;
 	}
 

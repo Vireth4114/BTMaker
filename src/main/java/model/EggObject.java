@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import btmaker.Controller;
+import btmaker.resources.ResourceManager;
 import javafx.scene.Node;
 
 public class EggObject extends GameObject {
@@ -13,7 +14,7 @@ public class EggObject extends GameObject {
 
 	@Override
 	public List<Node> getShapes(Controller controller) {
-		Node sprite = controller.getImageById((short) 208);
+		Node sprite = ResourceManager.INSTANCE.getSpriteById((short) 208);
 		sprite.setLayoutX(controller.levelXtoViewX(xAbs));
 		sprite.setLayoutY(controller.levelYtoViewY(yAbs));
 		return Arrays.asList(new Node[] { sprite });
