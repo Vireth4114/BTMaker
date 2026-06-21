@@ -1,5 +1,6 @@
 package objects
 
+import btmaker.Matrix2x2
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.IntegerProperty
@@ -12,6 +13,8 @@ import kotlin.math.atan2
 import kotlin.math.hypot
 
 abstract class GameObject {
+    abstract val type: Int
+
     val idProperty = SimpleShortProperty()
     var id: Short
         get() = idProperty.get().toShort()

@@ -10,9 +10,4 @@ module btmaker {
     opens btmaker;
     exports btmaker;
     exports btmaker.resources;
-    exports commands;
-    exports model;
-    exports event;
-    exports view.components;
-    exports model.objects;
 }

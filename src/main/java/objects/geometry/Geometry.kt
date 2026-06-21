@@ -6,6 +6,8 @@ import javafx.scene.paint.Color
 import objects.GameObject
 
 class Geometry: GameObject() {
+    override val type = 4
+
     val colorProperty = SimpleObjectProperty<Color>()
     var color: Color?
         get() = colorProperty.get()

@@ -8,6 +8,8 @@ import properties.SimpleByteProperty
 import properties.SimpleShortProperty
 
 class Event: Zone() {
+    override val type = 6
+
     val stateProperty = SimpleByteProperty()
     var state: Byte
         get() = stateProperty.get().toByte()

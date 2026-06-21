@@ -12,7 +12,7 @@ class WaterReader: ZoneReader<Water>() {
         gravityRight = input.readByte()
         gravityBottom = input.readByte()
         gravityLeft = input.readByte()
-        val alpha = input.readByte() / 255.0
+        val alpha = input.readUnsignedByte() / 255.0
         color = Color.rgb(input.readUnsignedByte(), input.readUnsignedByte(), input.readUnsignedByte(), alpha)
     }
 }

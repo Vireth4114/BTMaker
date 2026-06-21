@@ -6,6 +6,8 @@ import objects.GameObject
 import properties.SimpleShortProperty
 
 class Enemy: GameObject() {
+    override val type = 15
+
     val enemyTypeProperty: ObjectProperty<EnemyType?> = SimpleObjectProperty()
     var enemyType: EnemyType?
         get() = enemyTypeProperty.get()

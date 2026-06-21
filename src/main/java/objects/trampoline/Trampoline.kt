@@ -5,6 +5,8 @@ import properties.SimpleByteProperty
 import properties.SimpleShortProperty
 
 class Trampoline: GameObject() {
+    override val type = 12
+
     val imageIdProperty = SimpleShortProperty()
     var imageId: Short
         get() = imageIdProperty.get().toShort()

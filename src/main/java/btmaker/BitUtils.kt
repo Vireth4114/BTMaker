@@ -1,5 +1,7 @@
 package btmaker
 
+import kotlin.math.log2
+
 object BitUtils {
     fun readStreamWithBitSize(bytes: ByteArray, bitSize: Int): List<Int> {
         if (bytes.isEmpty()) return listOf()
@@ -8,7 +10,7 @@ object BitUtils {
         val usableBits = totalBits - (totalBits % bitSize)
         val size = usableBits / bitSize
 
-        val result = ArrayList<Int>(size)
+        val result = MutableList(size) { 0 }
 
         var buffer = 0L
         var bitsInBuffer = 0
@@ -62,5 +64,14 @@ object BitUtils {
         }
 
         return result
+    }
+
+    fun getOptimalBitSizeAndBase(values: List<Int>): Pair<Int, Int> {
+        val min = values.minOrNull() ?: 0
+        val max = values.maxOrNull() ?: 0
+        val range = max - min
+        val base = min + range / 2
+        val bitSize = (log2((range + 1).toDouble()) + 1).toInt()
+        return Pair(bitSize, base)
     }
 }

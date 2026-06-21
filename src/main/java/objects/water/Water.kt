@@ -7,6 +7,8 @@ import objects.zone.Zone
 import properties.SimpleByteProperty
 
 class Water: Zone() {
+    override val type = 10
+
     val gravityTopProperty = SimpleByteProperty()
     var gravityTop: Byte
         get() = gravityTopProperty.get().toByte()

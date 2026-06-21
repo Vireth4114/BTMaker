@@ -13,18 +13,28 @@ object ResourceManager {
     val compoundSpriteMetadata = HashMap<Short, List<SubSpriteMetadata>>()
     val animatedSpriteFrames = HashMap<Short, List<Short>>()
 
+    @JvmStatic
+    fun main(args: Array<String>) {
+        JarFile("""C:\Users\rapha\Documents\KEmulator\bouncetales_tasdvtete.jar""").use { jar ->
+            loadResourcesFrom(jar)
+        }
+    }
+
     fun loadResourcesFrom(jarFile: JarFile) {
         loadBatchMapping(jarFile)
         loadSpriteBatches(jarFile)
     }
 
     fun loadBatchMapping(jarFile: JarFile) = getResourceFileInputStream(jarFile).apply {
+        var i = 0
         val resources = List(readShort().toInt()) {
             Resource(
                 path = readUTF(),
                 offset = readInt(),
                 length = readInt()
             )
+        }.onEach {
+            println("Resource ${i++}: path=${it.path}, offset=${it.offset}, length=${it.length}")
         }
         val batchCount = readShort().toInt()
         repeat(batchCount) {
@@ -37,6 +47,7 @@ object ResourceManager {
             val resourcesInBatch = List(resourceCount) {
                 resources[readShort().toInt()]
             }.onEach { it.type = type }
+            println("Batch $it: type=$type, offset=${batchData.offset}, batchData=${batchData.path}, resources=${resourcesInBatch.map { it.path }}")
 
             if (type == ResourceType.IMAGE) {
                 batchAtOffset[batchData.offset] = resourcesInBatch

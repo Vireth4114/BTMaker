@@ -2,15 +2,17 @@ package objects
 
 import btmaker.CountingDataInputStream
 import java.io.DataInput
+import java.io.InputStream
 
 abstract class GameObjectReader<T : GameObject> {
-    fun read(input: CountingDataInputStream): T {
+    fun read(input: InputStream): T {
+        val countingInput = CountingDataInputStream(input)
         val obj = createInstance()
 
-        val length = input.readShort()
-        input.chunk(length) {
-            readCommon(input, obj)
-            readSpecific(input, obj)
+        val length = countingInput.readShort()
+        countingInput.chunk(length) {
+            readCommon(countingInput, obj)
+            readSpecific(countingInput, obj)
         }
 
         return obj
@@ -26,10 +28,10 @@ abstract class GameObjectReader<T : GameObject> {
         if ((transformFlags and 7) == 7) {
             val a = input.readInt() / 65536.0
             val b = input.readInt() / 65536.0
-            xPos = input.readInt() shr 16
+            xPos = (input.readInt() / 65536.0).toInt().toShort()
             val c = input.readInt() / 65536.0
             val d = input.readInt() / 65536.0
-            yPos = input.readInt() shr 16
+            yPos = (input.readInt() / 65536.0).toInt().toShort()
             setScaleAndRotationFromMatrix(a, b, c, d)
         } else {
             if ((transformFlags and 1) > 0) {

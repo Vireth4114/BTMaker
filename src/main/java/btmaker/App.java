@@ -15,20 +15,6 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
     	stage.getIcons().add(new Image("/icon.png"));
     	stage.setTitle("BTMaker 0.2.0");
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/btMaker.fxml"));
-        Controller controller = new Controller();
-        fxmlLoader.setController(controller);
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 675);
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, controller::onKeyPress);
-        scene.setOnKeyReleased(controller::onKeyReleased);
-        scene.getStylesheets().add("/style.css");
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.setMinWidth(950);
-        stage.setMinHeight(500);
-        stage.widthProperty().addListener((o, p, n) -> controller.resetPane());
-        stage.heightProperty().addListener((o, p, n) -> controller.resetPane());
-        controller.cursor.bindBidirectional(scene.cursorProperty());
         stage.show();
     }
 

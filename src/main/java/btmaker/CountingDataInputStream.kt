@@ -2,13 +2,16 @@ package btmaker
 
 import java.io.DataInput
 import java.io.DataInputStream
+import java.io.InputStream
 
 /**
  * A DataInputStream that counts the number of bytes read.
  * readUTF and readLine are not counted because they read a variable number of bytes.
  */
-class CountingDataInputStream(private val stream: DataInputStream) : DataInput {
+class CountingDataInputStream(private val stream: DataInputStream) : DataInput, InputStream() {
     var bytesRead = 0
+
+    constructor(stream: InputStream): this(DataInputStream(stream))
 
     override fun readFully(b: ByteArray) {
         stream.readFully(b)
@@ -47,4 +50,6 @@ class CountingDataInputStream(private val stream: DataInputStream) : DataInput {
 
         return result
     }
+
+    override fun read(): Int = stream.read().also { if (it >= 0) bytesRead += 1 }
 }
