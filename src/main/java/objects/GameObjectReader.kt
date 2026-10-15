@@ -1,12 +1,13 @@
 package objects
 
-import btmaker.CountingDataInputStream
+import btmaker.streams.CountingDataInput
 import java.io.DataInput
+import java.io.DataInputStream
 import java.io.InputStream
 
 abstract class GameObjectReader<T : GameObject> {
     fun read(input: InputStream): T {
-        val countingInput = CountingDataInputStream(input)
+        val countingInput = CountingDataInput(DataInputStream(input))
         val obj = createInstance()
 
         val length = countingInput.readShort()

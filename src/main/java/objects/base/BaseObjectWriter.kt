@@ -1,10 +1,11 @@
 package objects.base
 
+import objects.GameObject
 import objects.GameObjectWriter
 import java.io.DataOutput
 
-class BaseObjectWriter: GameObjectWriter<BaseObject>() {
-    override fun writeSpecific(output: DataOutput, obj: BaseObject) {
+object BaseObjectWriter: GameObjectWriter<GameObject>() {
+    override fun writeSpecific(output: DataOutput, obj: GameObject) {
         // No specific data to write for BaseObject
     }
 }

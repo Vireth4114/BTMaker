@@ -3,7 +3,7 @@ package objects.base
 import objects.GameObjectReader
 import java.io.DataInput
 
-class BaseObjectReader: GameObjectReader<BaseObject>() {
+object BaseObjectReader: GameObjectReader<BaseObject>() {
     override fun createInstance() = BaseObject()
 
     override fun readSpecific(input: DataInput, obj: BaseObject) {

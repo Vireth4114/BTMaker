@@ -3,7 +3,7 @@ package objects.egg
 import objects.GameObjectReader
 import java.io.DataInput
 
-class EggReader: GameObjectReader<Egg>() {
+object EggReader: GameObjectReader<Egg>() {
     override fun createInstance() = Egg()
 
     override fun readSpecific(input: DataInput, obj: Egg) {

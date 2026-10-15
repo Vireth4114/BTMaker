@@ -3,7 +3,7 @@ package objects.enemy
 import objects.GameObjectWriter
 import java.io.DataOutput
 
-class EnemyWriter: GameObjectWriter<Enemy>() {
+object EnemyWriter: GameObjectWriter<Enemy>() {
     override fun writeSpecific(output: DataOutput, obj: Enemy) = output.run {
         writeShort(obj.startX.toInt())
         writeShort(obj.startY.toInt())

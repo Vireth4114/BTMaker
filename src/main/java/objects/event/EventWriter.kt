@@ -3,7 +3,7 @@ package objects.event
 import objects.zone.ZoneWriter
 import java.io.DataOutput
 
-class EventWriter: ZoneWriter<Event>() {
+object EventWriter: ZoneWriter<Event>() {
     override fun writeSpecificZone(output: DataOutput, obj: Event) = output.run {
         writeByte(obj.state.toInt())
         writeByte(obj.triggerLeave.toInt())

@@ -3,7 +3,7 @@ package btmaker.resources
 import java.io.DataInputStream
 import java.util.jar.JarFile
 
-class Resource(var path: String, var offset: Int = 0, var length: Int? = null) {
+class Resource(var path: String, var offset: Int, var length: Int) {
     var type: ResourceType? = null
 
     fun getInputStream(jarFile: JarFile): DataInputStream {

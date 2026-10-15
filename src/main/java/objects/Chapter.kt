@@ -14,7 +14,7 @@ class Chapter {
         var eventId: Byte = 0
         stream.skip(14) // Skip header and object counts
         while (true) {
-            val obj = GameObjectRegistry.read(it) ?: break
+            val obj = ObjectIOFacade.read(it) ?: break
             obj.id = id++
             println("Read object with id ${obj.id} and type ${obj.type}")
             if (obj.type == 6) {
@@ -32,7 +32,7 @@ class Chapter {
         dataStream.writeShort(objects.count { obj -> obj.type == 6 })
         var bytesWritten = 14
         for (obj in objects) {
-            bytesWritten += GameObjectRegistry.write(dataStream, obj)
+            bytesWritten += ObjectIOFacade.write(dataStream, obj)
         }
         dataStream.writeByte(127)
         return bytesWritten + 1

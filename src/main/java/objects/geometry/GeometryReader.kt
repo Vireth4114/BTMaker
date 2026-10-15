@@ -6,7 +6,7 @@ import objects.GameObjectReader
 import java.io.DataInput
 import kotlin.math.ceil
 
-class GeometryReader: GameObjectReader<Geometry>() {
+object GeometryReader: GameObjectReader<Geometry>() {
     override fun createInstance() = Geometry()
 
     override fun readSpecific(input: DataInput, obj: Geometry): Unit = obj.run {

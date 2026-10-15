@@ -4,7 +4,7 @@ import javafx.scene.paint.Color
 import objects.zone.ZoneReader
 import java.io.DataInput
 
-class WaterReader: ZoneReader<Water>() {
+object WaterReader: ZoneReader<Water>() {
     override fun createInstance() = Water()
 
     override fun readSpecificZone(input: DataInput, obj: Water) = obj.run {

@@ -1,16 +1,12 @@
-package btmaker
+package btmaker.streams
 
 import java.io.DataOutput
-import java.io.DataOutputStream
-import java.io.OutputStream
 
 /**
  * A DataOutputStream that counts the number of bytes written.
  */
-class CountingDataOutputStream(private val stream: DataOutputStream) : DataOutput, OutputStream() {
+class CountingDataOutput(private val stream: DataOutput) : DataOutput {
     var bytesWritten = 0
-
-    constructor(buffer: OutputStream) : this(DataOutputStream(buffer))
 
     override fun write(b: Int) = stream.write(b).also { bytesWritten += 1 }
     override fun write(b: ByteArray) = stream.write(b).also { bytesWritten += b.size }

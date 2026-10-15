@@ -4,7 +4,7 @@ import javafx.collections.FXCollections
 import objects.zone.ZoneReader
 import java.io.DataInput
 
-class EventReader: ZoneReader<Event>() {
+object EventReader: ZoneReader<Event>() {
     override fun createInstance() = Event()
 
     override fun readSpecificZone(input: DataInput, obj: Event) = obj.run {

@@ -1,16 +1,15 @@
 package objects
 
-import btmaker.CountingDataOutputStream
 import btmaker.Matrix2x2
+import btmaker.streams.CountingDataOutput
 import java.io.ByteArrayOutputStream
 import java.io.DataOutput
 import java.io.DataOutputStream
-import java.io.OutputStream
 
 abstract class GameObjectWriter<T: GameObject> {
     fun write(output: DataOutputStream, obj: T, previousId: Int = -1): Int {
         val buffer = ByteArrayOutputStream()
-        val bufferOutput = CountingDataOutputStream(buffer)
+        val bufferOutput = CountingDataOutput(DataOutputStream(buffer))
 
         writeCommon(bufferOutput, obj, previousId)
         writeSpecific(bufferOutput, obj)
@@ -21,7 +20,7 @@ abstract class GameObjectWriter<T: GameObject> {
         return bufferOutput.bytesWritten + 2
     }
 
-    private fun writeCommon(output: DataOutput, obj: GameObject, previousId: Int = -1) = output.run {
+    private fun writeCommon(output: DataOutput, obj: GameObject, previousId: Int) = output.run {
         writeShort(obj.parentID.toInt())
         writeShort(previousId)
 

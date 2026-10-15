@@ -5,7 +5,7 @@ import objects.GameObjectWriter
 import java.io.DataOutput
 import kotlin.math.max
 
-class GeometryWriter: GameObjectWriter<Geometry>() {
+object GeometryWriter: GameObjectWriter<Geometry>() {
     override fun writeSpecific(output: DataOutput, obj: Geometry) = output.run {
         writeShort(obj.verticesX.size)
         writeShort(obj.triangulationIndices.size)

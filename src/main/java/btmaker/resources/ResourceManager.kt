@@ -3,7 +3,9 @@ package btmaker.resources
 import javafx.scene.Node
 import javafx.scene.image.Image
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
+import java.io.DataOutputStream
 import java.util.jar.JarFile
 
 object ResourceManager {
@@ -20,22 +22,40 @@ object ResourceManager {
         }
     }
 
+    fun getResourceDataWithChapterLength(originalDataStream: DataInputStream, lengths: Map<String, Int>): ByteArray {
+        val resources = readResources(originalDataStream).onEach {
+            lengths[it.path]?.let { length -> it.length = length }
+        }
+        val buffer = ByteArrayOutputStream()
+        DataOutputStream(buffer).apply {
+            writeShort(resources.size)
+            resources.forEach {
+                writeUTF(it.path)
+                writeInt(it.offset)
+                writeInt(it.length)
+            }
+            write(originalDataStream.read())
+        }
+        return buffer.toByteArray()
+    }
+
     fun loadResourcesFrom(jarFile: JarFile) {
         loadBatchMapping(jarFile)
         loadSpriteBatches(jarFile)
     }
 
-    fun loadBatchMapping(jarFile: JarFile) = getResourceFileInputStream(jarFile).apply {
-        var i = 0
-        val resources = List(readShort().toInt()) {
+    fun readResources(stream: DataInputStream): List<Resource> {
+        return List(stream.readShort().toInt()) {
             Resource(
-                path = readUTF(),
-                offset = readInt(),
-                length = readInt()
+                path = stream.readUTF(),
+                offset = stream.readInt(),
+                length = stream.readInt()
             )
-        }.onEach {
-            println("Resource ${i++}: path=${it.path}, offset=${it.offset}, length=${it.length}")
         }
+    }
+
+    fun loadBatchMapping(jarFile: JarFile) = getResourceFileInputStream(jarFile).apply {
+        val resources = readResources(this)
         val batchCount = readShort().toInt()
         repeat(batchCount) {
             val type = ResourceType.fromCode(readByte())
@@ -47,7 +67,6 @@ object ResourceManager {
             val resourcesInBatch = List(resourceCount) {
                 resources[readShort().toInt()]
             }.onEach { it.type = type }
-            println("Batch $it: type=$type, offset=${batchData.offset}, batchData=${batchData.path}, resources=${resourcesInBatch.map { it.path }}")
 
             if (type == ResourceType.IMAGE) {
                 batchAtOffset[batchData.offset] = resourcesInBatch

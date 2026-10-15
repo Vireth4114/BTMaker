@@ -5,7 +5,7 @@ import objects.GameObjectReader
 import java.io.DataInput
 import kotlin.math.ceil
 
-class SpriteReader: GameObjectReader<Sprite>() {
+object SpriteReader: GameObjectReader<Sprite>() {
     override fun createInstance() = Sprite()
 
     override fun readSpecific(input: DataInput, obj: Sprite): Unit = obj.run {

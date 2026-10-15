@@ -5,7 +5,7 @@ import objects.GameObjectWriter
 import java.io.DataOutput
 import kotlin.math.max
 
-class SpriteWriter: GameObjectWriter<Sprite>() {
+object SpriteWriter: GameObjectWriter<Sprite>() {
     override fun writeSpecific(output: DataOutput, obj: Sprite): Unit = output.run {
         writeByte(obj.imageIDs.size)
         if (obj.imageIDs.isEmpty()) return
